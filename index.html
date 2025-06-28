@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aasai Achagam</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #002366, #0f52ba); /* Royal Blue Gradient */
+            color: #ffd700; /* Golden Yellow */
+            transition: all 0.5s ease;
+        }
+
+        .content {
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.05); /* Glassmorphism effect */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+        }
+
+        .logo img {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px #ffd700);
+        }
+
+        .yellow-shadow {
+            text-shadow: 2px 2px 6px rgba(255, 215, 0, 0.8);
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid #ffd700;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        a:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="logo">
+            <!-- Replace the src with your actual logo image path -->
+            <img src="logo.png" alt="Aasai Achagam Logo">
+        </div>
+        <div id="text-block" class="yellow-shadow">
+            <!-- Content will be switched via JavaScript -->
+        </div>
+        <a href="https://g.co/kgs/7hRVJka" target="_blank">🌐 Web</a>
+    </div>
+
+    <script>
+        const englishContent = `
+            <h1>Aasai Achagam</h1>
+            <p><strong>Address:</strong> Ganesh complex, 5/152H, Thennampalayam - Annur Rd, Coimbatore, Thennampalayam, Tamil Nadu 641407</p>
+            <p><strong>Phone Number:</strong> +91 98433 19470</p>
+        `;
+
+        const tamilContent = `
+            <h1>ஆசை அச்சகம்</h1>
+            <p><strong>முகவரி:</strong> கணேஷ் காம்ப்ளெக்ஸ், 5/152H, தென்னம்பாளையம் - அண்ணூர் சாலை, கோயம்புத்தூர், தென்னம்பாளையம், தமிழ்நாடு 641407</p>
+            <p><strong>தொலைபேசி:</strong> +91 98433 19470</p>
+        `;
+
+        let showEnglish = true;
+        const textBlock = document.getElementById('text-block');
+
+        function toggleLanguage() {
+            textBlock.innerHTML = showEnglish ? englishContent : tamilContent;
+            showEnglish = !showEnglish;
+        }
+
+        toggleLanguage();
+        setInterval(toggleLanguage, 2000);
+    </script>
+</body>
+</html>
