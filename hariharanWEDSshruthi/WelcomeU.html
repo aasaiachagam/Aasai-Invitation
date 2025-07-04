@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/png">
+  <title>Wedding Invitation</title>
+
+  <!-- Font Imports -->
+  
+  <!--OTher fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kavivanar&display=swap" rel="stylesheet"> <!--Tamil font -->
+  <link href="https://fonts.googleapis.com/css2?family=Amarante&display=swap" rel="stylesheet"><!--Engish font -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet"><!--ENG font -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet"><!--ENG font -->
+
+  <style>
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      position: relative;
+      color: #5a3e0b;
+      height: 100vh;
+      background: linear-gradient(135deg, #fff5d7, #fceabb, #f8d878, #eac75a, #ffd700, #e5c100, #fbe09b);
+      background-size: 600% 600%;
+      animation: goldShimmer 20s ease infinite;
+    }
+
+    @keyframes goldShimmer {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .lang-en {
+      font-family: "Dancing Script", cursive;
+    }
+
+    .lang-en h1 { font-size: 2em; }     /* Change English h1 font size here */
+    .lang-en h2 { font-size: 1.8em; }   /* Change English h2 font size here */
+    .lang-en h4 { font-size: 1.3em; }
+    .lang-en p  { font-size: 1.1em; }
+
+    .lang-ta {
+      font-family: "Kavivanar", cursive;
+    }
+
+    .lang-ta h1 { font-size: 1.8em; }   /* Change Tamil h1 font size here */
+    .lang-ta h2 { font-size: 1.6em; }   /* Change Tamil h2 font size here */
+    .lang-ta h4 { font-size: 1.2em; }
+    .lang-ta p  { font-size: 1.05em; }
+
+    .clouds {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cloud {
+      background: rgba(255,255,255,0.8);
+      width: 200px;
+      height: 60px;
+      border-radius: 100px;
+      position: absolute;
+      top: 20px;
+      animation: moveClouds 60s linear infinite;
+    }
+    .cloud.x2 { top: 60px; animation-duration: 80s; opacity: 0.6; }
+    .cloud.x3 { top: 100px; animation-duration: 100s; opacity: 0.5; }
+
+    @keyframes moveClouds {
+      0% { transform: translateX(-300px); }
+      100% { transform: translateX(120vw); }
+    }
+
+    #petal-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .petal {
+      position: absolute;
+      top: -50px;
+      font-size: 24px;
+      opacity: 0.8;
+      animation: fall linear infinite;
+      transform: rotate(0deg);
+      will-change: transform;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      100% {
+        transform: translate(var(--x-move, 0px), 110vh) rotate(360deg);
+      }
+    }
+
+    .content {
+      text-align: center;
+      padding: 100px 20px 40px;
+      max-width: 800px;
+      margin: auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    #langToggle {
+      position: fixed;
+      top: 10px; right: 20px;
+      padding: 6px 12px;
+      background: #33adf9;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 100;
+      font-family: "Kalnia Glaze", serif;
+    }
+
+    .event {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+      box-shadow: 0 4px 10px rgba(108, 103, 103, 0.1);
+      z-index: 0;
+      backdrop-filter: blur(5px);
+    }
+
+    .event-header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: linear-gradient(
+        270deg,
+        rgba(238, 240, 237, 0.9),
+        rgba(160, 160, 236, 0.9),
+        rgba(237, 112, 75, 0.9),
+        rgba(64, 219, 44, 0.9)
+      );
+      background-size: 800% 800%;
+      animation: gradientBorder 8s ease infinite;
+      backdrop-filter: blur(10px);
+      font-family: "Amarante", serif;
+      border-radius: 10px;
+    }
+
+    .event-header img {
+      width: 50px; height: 50px;
+      margin-right: 15px;
+    }
+
+    .event-content {
+      padding: 10px 20px;
+      font-family:  "Caveat Brush", cursive;
+    }
+
+    .qr-section img {
+      width: 150px;
+      border: 4px solid #fff;
+      border-radius: 10px;
+    }
+
+    .map-link {
+      display: block;
+      margin-top: 10px;
+      color: #b76b00;
+      font-weight: bold;
+      text-decoration: none;
+      font-family: sans-serif;
+    }
+
+    @keyframes gradientBorder {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @media (max-width:600px) {
+      .content { padding: 60px 10px; }
+      .clouds { height: 120px; top: 0; }
+      .cloud { width: 150px; height: 45px; }
+    }
+
+    footer {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 15px;
+      text-align: center;
+      font-size: 16px;
+      color: #333;
+      border-top: 1px solid #ccc;
+    }
+
+    footer a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clouds">
+    <div class="cloud"></div>
+    <div class="cloud x2"></div>
+    <div class="cloud x3"></div>
+  </div>
+
+  <div id="petal-container"></div>
+
+  <button id="langToggle">தமிழ்</button>
+
+  <!-- Add lang-wrapper here to toggle styles -->
+  <div id="langWrapper" class="lang-en">
+    <div class="content">
+      <h1 id="title">You're Invited!</h1>
+      <h2 id="groom">Mapu</h2>
+      <h4 id="wed">Weds</h4>
+      <h2 id="bride">Ponnu</h2>
+      <p id="message">Join us in celebrating the union of</p>
+
+      <div class="event">
+        <div class="event-header">
+          <img src="assets/reception.png" alt="Reception"/>
+          <span id="e_reception_title">Reception</span>
+        </div>
+        <div class="event-content" id="e_reception_content"></div>
+      </div>
+
+      <div class="event">
+        <div class="event-header">
+          <img src="assets/wedding.png" alt="Wedding"/>
+          <span id="e_wedding_title">Wedding Ceremony</span>
+        </div>
+        <div class="event-content" id="e_wedding_content"></div>
+      </div>
+
+      <div class="qr-section" style=" font-family: 'Amarante';">
+        <h2>Venu/Location </h2>
+        <a style=" font-family: 'Amarante';" href="https://maps.app.goo.gl/vTHtvKETTexfhxQL8" class="map-link" target="_blank">Take me to Reception <i style="color: #080808;">(Click Here)</i>
+          <br><img src="assets/qr.png" alt="Location QR"/>
+        </a>
+        <!--a style=" font-family: 'Amarante';" href="https://maps.app.goo.gl/e8fZ2D7e43QrnAiZ8" class="map-link" target="_blank">Take me to Muhurtham <i style="color: #030303;">(Click Here)</i></a-->
+      </div>
+    </div>
+  </div>
+
+  <footer >
+    Crafted with care🫰 by <strong>Aasai Achagam</strong> |
+    <a href="https://g.co/kgs/Q9JfMxS" target="_blank">🌐 Location </a> |
+    Call or Whatsapp us at <a href="tel:9843319470">📞 98433 19470 </a>
+  </footer>
+
+  <script>
+    const langContent = {
+      en: {
+        title: "With love and blessings, you are warmly invited to the wedding of...",
+        message: "Join us in the joyous celebration of the union of two families at",
+        groom: " Hariharan",
+        bride: "S  Shruthi",
+        events: {
+          reception: {
+            title: "Reception",
+            content: "On Thursday 23rd October 2025 between 6.00 Pm & 9.00 Pm @ Shree M.S. Mahal, Kittampalayam, Karumathampatti."
+          },
+          wedding: {
+            title: "Muhurtham",
+            content: "On Friday 24th October 2025 between 4.30 Am & 6.00 Am @ Arulmigu Paramasivan Thirukoyil, Arasur"
+          }
+        }
+      },
+      ta: {
+        title: "இன்பகரமான இந்த நொடியில், எங்கள் திருமண விழாவிற்கு உங்களை அன்புடன் அழைக்கிறோம்.",
+        message: "இரு குடும்பங்களின் இணைவை மகிழ்வுடன் கொண்டாட எங்களுடன் சேருங்கள்",
+        groom: "ஈ. விக்னேஷ்",
+        bride: "செ.செ. பிரத்தியுஷா",
+        events: {
+          wedding: {
+            title: "முஹூர்த்தம்",
+            content: "அக்டோபர் 24, 2025 வெள்ளிக்கிழமை காலை 4.30 மணி முதல் 6.00 மணி வரை @ அருள்மிகு பரமசிவன் திருக்கோயில், அரசூர்"
+          },
+          reception: {
+            title: "வரவேற்பு",
+            content: "அக்டோபர் 23, 2025 வியாழன் அன்று மாலை 6.00 மணி & இரவு 9.00 மணி வரை @ ஸ்ரீ எம்.எஸ். மகால், கிட்டம்பாளையம், கருமத்தம்பட்டி"
+          }
+        }
+      }
+    };
+
+    let currentLang = 'en';
+
+    document.getElementById('langToggle').onclick = () => {
+      currentLang = currentLang === 'en' ? 'ta' : 'en';
+      updateLang();
+    };
+
+    function updateLang() {
+      const data = langContent[currentLang];
+      const wrapper = document.getElementById("langWrapper");
+
+      wrapper.classList.remove('lang-en', 'lang-ta');
+      wrapper.classList.add(currentLang === 'en' ? 'lang-en' : 'lang-ta');
+
+      document.getElementById("title").textContent = data.title;
+      document.getElementById("message").textContent = data.message;
+      document.getElementById("bride").textContent = data.bride;
+      document.getElementById("groom").textContent = data.groom;
+      for (let k in data.events) {
+        document.getElementById(`e_${k}_title`).textContent = data.events[k].title;
+        document.getElementById(`e_${k}_content`).textContent = data.events[k].content;
+      }
+
+      document.getElementById('langToggle').textContent = currentLang === 'en' ? 'தமிழ்' : 'English';
+    }
+
+    function createPetal() {
+      const emojis = ["🌸", "💖", "💍", "🎊"];
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+      const left = Math.random() * 100;
+      const xMove = (Math.random() - 0.5) * 200;
+
+      p.style.left = `${left}vw`;
+      p.style.animationDuration = `${5 + Math.random() * 5}s`;
+      p.style.opacity = 0.5 + Math.random() * 0.5;
+      p.style.fontSize = `${20 + Math.random() * 10}px`;
+      p.style.setProperty('--x-move', `${xMove}px`);
+      p.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+      document.getElementById('petal-container').appendChild(p);
+      setTimeout(() => p.remove(), 10000);
+    }
+
+    setInterval(createPetal, 300);
+    updateLang();
+  </script>
+</body>
+</html>
