@@ -144,7 +144,7 @@
       padding: 10px;
       background: linear-gradient(
         270deg,
-        rgba(238, 240, 237, 0.9),
+        rgb(255, 0, 184),
         rgba(160, 160, 236, 0.9),
         rgba(237, 112, 75, 0.9),
         rgba(64, 219, 44, 0.9)
@@ -251,9 +251,9 @@
       </div>
 
       <div class="qr-section" style=" font-family: 'Amarante';">
-        <h2>Venu/Location</h2>
-        <a style=" font-family: 'Amarante';" href="https://maps.app.goo.gl/vTHtvKETTexfhxQL8" class="map-link" target="_blank">Take me to Reception <i style="color: #080808;">(Click Here)</i>
-          <br><img src="assets/qr.png" alt="Location QR"/>
+        <h2>Location /நிகழ்வு இடம்</h2>
+        <a style=" font-family: 'Amarante';" href="https://maps.app.goo.gl/zcGBdy5BQ2LBvBkq6" class="map-link" target="_blank">Take me to Reception <i style="color: #080808;">(Click Here)</i>
+          <br><img src="assets/QR_B.png" alt="Location QR"/>
         </a>
          <!--a style=" font-family: 'Amarante';" href="https://maps.app.goo.gl/e8fZ2D7e43QrnAiZ8" class="map-link" target="_blank">Take me to Muhurtham <i style="color: #030303;">(Click Here)</i></a-->
       </div>
@@ -271,32 +271,32 @@
       en: {
         title: "With love and blessings, you are warmly invited to the wedding of...",
         message: "Join us in the joyous celebration of the union of two families at",
-        groom: "Arun",
-        bride: "Snhea",
+        groom: "S. Arunkumar",
+        bride: "P. Sneha",
         events: {
           reception: {
             title: "Reception",
-            content: "On Thursday 23rd October 2025 between 6.00 Pm & 9.00 Pm @ Shree M.S. Mahal, Kittampalayam, Karumathampatti."
+            content: "On Thursday 23rd October 2025 between 6.00 Pm & 9.00 Pm. @ Arulmigu Kariyakali Amman Mahal, Pachapalayam."
           },
           wedding: {
             title: "Muhurtham",
-            content: "On Friday 24th October 2025 between 4.30 Am & 6.00 Am @ Arulmigu Paramasivan Thirukoyil, Arasur"
+            content: "On Friday 24th October 2025 between 5.00 Am & 6.00 Am. @ Arulmigu Kariyakali Amman Mahal, Pachapalayam."
           }
         }
       },
       ta: {
-        title: "இன்பகரமான இந்த நொடியில், எங்கள் திருமண விழாவிற்கு உங்களை அன்புடன் அழைக்கிறோம்.",
-        message: "இரு குடும்பங்களின் இணைவை மகிழ்வுடன் கொண்டாட எங்களுடன் சேருங்கள்",
-        groom: "ஈ. விக்னேஷ்",
-        bride: "செ.செ. பிரத்தியுஷா",
+        title: "இரு இதயங்கள் இணையும் இந்த பொன்னான நாளில், உங்கள் வருகை எங்களுக்கு இரட்டிப்பு மகிழ்ச்சியை தரும்",
+        message: "இரு மனங்களின் இணைவை மகிழ்ச்சியுடன் கொண்டாட எங்களுடன் சேருங்கள்.",
+        groom: "S. அருண்குமார்",
+        bride: "P. சினே",
         events: {
           wedding: {
             title: "முஹூர்த்தம்",
-            content: "அக்டோபர் 24, 2025 வெள்ளிக்கிழமை காலை 4.30 மணி முதல் 6.00 மணி வரை @ அருள்மிகு பரமசிவன் திருக்கோயில், அரசூர்"
+            content: "2025 அக்டோபர் 24 வெள்ளிக்கிழமை காலை 5.00 மணி முதல் 6.00 மணி வரை. @ அருள்மிகு கரியகாளி அம்மன் மகால், பச்சபாளையம்."
           },
           reception: {
             title: "வரவேற்பு",
-            content: "அக்டோபர் 23, 2025 வியாழன் அன்று மாலை 6.00 மணி & இரவு 9.00 மணி வரை @ ஸ்ரீ எம்.எஸ். மகால், கிட்டம்பாளையம், கருமத்தம்பட்டி"
+            content: "2025 அக்டோபர் 23 வியாழக்கிழமை மாலை 6.00 மணி முதல் இரவு 9.00 மணி வரை. @ அருள்மிகு கரியகாளி அம்மன் மகால், பச்சபாளையம்."
           }
         }
       }
@@ -329,7 +329,7 @@
     }
 
     function createPetal() {
-      const emojis = ["💍","🎉", "💕", "😍","💝","💍","🎉", "💕", "😍","💝"];
+      const emojis = ["💍","🎉", "💕", "✨","💝","💍","🎉", "💕", "😍","💝"];
       const p = document.createElement('div');
       p.className = 'petal';
       p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
