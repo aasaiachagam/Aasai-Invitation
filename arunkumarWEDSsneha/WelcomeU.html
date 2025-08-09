@@ -276,11 +276,11 @@
         events: {
           reception: {
             title: "Reception",
-            content: "On Thursday 23rd October 2025 between 6.00 Pm & 9.00 Pm. @ Arulmigu Kariyakali Amman Mahal, Pachapalayam."
+            content: "On Thursday 23rd October 2025 between 6.00 Pm & 9.00 Pm.<br>@ Arulmigu Kariyakali Amman Mahal, Pachapalayam."
           },
           wedding: {
             title: "Muhurtham",
-            content: "On Friday 24th October 2025 between 5.00 Am & 6.00 Am. @ Arulmigu Kariyakali Amman Mahal, Pachapalayam."
+            content: "On Friday 24th October 2025 between 5.00 Am & 6.00 Am.<br>@ Arulmigu Kariyakali Amman Mahal, Pachapalayam."
           }
         }
       },
@@ -292,11 +292,11 @@
         events: {
           wedding: {
             title: "முஹூர்த்தம்",
-            content: "2025 அக்டோபர் 24 வெள்ளிக்கிழமை காலை 5.00 மணி முதல் 6.00 மணி வரை. @ அருள்மிகு கரியகாளி அம்மன் மகால், பச்சபாளையம்."
+            content: "2025 அக்டோபர் 24 வெள்ளிக்கிழமை காலை 5.00 மணி முதல் 6.00 மணி வரை.<br> @ அருள்மிகு கரியகாளி அம்மன் மஹால், பச்சாபாளையம்."
           },
           reception: {
             title: "வரவேற்பு",
-            content: "2025 அக்டோபர் 23 வியாழக்கிழமை மாலை 6.00 மணி முதல் இரவு 9.00 மணி வரை. @ அருள்மிகு கரியகாளி அம்மன் மகால், பச்சபாளையம்."
+            content: "2025 அக்டோபர் 23 வியாழக்கிழமை மாலை 6.00 மணி முதல் இரவு 9.00 மணி வரை.<br> @ அருள்மிகு கரியகாளி அம்மன் மஹால், பச்சாபாளையம்."
           }
         }
       }
@@ -322,7 +322,7 @@
       document.getElementById("groom").textContent = data.groom;
       for (let k in data.events) {
         document.getElementById(`e_${k}_title`).textContent = data.events[k].title;
-        document.getElementById(`e_${k}_content`).textContent = data.events[k].content;
+        document.getElementById(`e_${k}_content`).innerHTML = data.events[k].content;
       }
 
       document.getElementById('langToggle').textContent = currentLang === 'en' ? 'தமிழ்' : 'English';
@@ -353,3 +353,4 @@
   </script>
 </body>
 </html>
+
