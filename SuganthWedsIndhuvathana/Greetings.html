@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/png">
+  <title>Wedding Invitation</title>
+
+  <!-- Font Imports -->
+  
+  <!--OTher fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kavivanar&display=swap" rel="stylesheet"> <!--Tamil font -->
+  <link href="https://fonts.googleapis.com/css2?family=Amarante&display=swap" rel="stylesheet"><!--Engish font -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet"><!--ENG font -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet"><!--ENG font -->
+
+  <script src="https://jsdelivr.net" defer></script>
+  <!--For add to calander -->
+  
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  overflow-x:hidden;
+  color:#5a3e0b;
+  min-height:100vh;
+  background:linear-gradient(180deg,#355de0 0%,#bfe2f7 40%,#e7f5fc 100%); /* fallback color if WebGL is unavailable; the animated sky canvas normally covers this */
+}
+#cloudSkyCanvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  display:block;
+  pointer-events:none;
+}
+.lang-en{font-family:"Dancing Script",cursive}
+.lang-ta{font-family:"Kavivanar",cursive}
+.lang-en h1{font-size:2.4rem}.lang-en h2{font-size:2rem}.lang-en h4{font-size:1.25rem}.lang-en p{font-size:1.15rem}
+.lang-ta h1{font-size:2.1rem}.lang-ta h2{font-size:1.8rem}.lang-ta h4{font-size:1.2rem}.lang-ta p{font-size:1.05rem}
+
+.top-controls{
+  position:fixed;top:18px;right:20px;z-index:100;
+  display:flex;align-items:center;gap:10px;
+}
+#langToggle,#calendarToggle{
+  padding:8px 15px;
+  color:#fff;background:#9b671b;border:1px solid rgba(255,255,255,.7);
+  border-radius:999px;cursor:pointer;font-family:"Amarante",serif;
+  box-shadow:0 5px 16px rgba(0,0,0,.18);font-size:1rem;line-height:1.2;
+}
+#calendarToggle{padding:8px 12px}
+
+/* Calendar modal */
+.calendar-modal{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(20,14,4,.55);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.calendar-modal[hidden]{display:none}
+.calendar-box{
+  position:relative;
+  width:min(360px,92vw);
+  background:#fffaf1;
+  border-radius:20px;
+  padding:22px 20px 24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+  font-family:"Amarante",serif;
+  color:#5d3a0a;
+  text-align:center;
+}
+.cal-close{
+  position:absolute;top:8px;right:12px;
+  background:none;border:none;font-size:1.2rem;cursor:pointer;color:#8a5812;
+}
+.cal-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+}
+.cal-header button{
+  background:#9b671b;color:#fff;border:none;border-radius:50%;
+  width:32px;height:32px;font-size:1.1rem;cursor:pointer;line-height:1;
+}
+#calMonthLabel{font-size:1.1rem;font-weight:700}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;
+}
+.cal-dow{font-size:.72rem;color:#9b671b;font-weight:700;padding:2px 0}
+.cal-day{
+  position:relative;padding:8px 0 6px;border-radius:8px;
+  font-size:.85rem;background:rgba(155,103,27,.08);
+}
+.cal-day.empty{background:transparent}
+.cal-day.heart{background:#ffe1e6;color:#b3002d;font-weight:700}
+.cal-day .heart-icon{display:block;font-size:.68rem;margin-top:1px}
+.cal-events{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.cal-add-btn{
+  background:#9b671b;color:#fff;border:none;border-radius:999px;
+  padding:9px 14px;font-family:"Amarante",serif;font-size:.85rem;cursor:pointer;
+}
+.cal-add-btn:hover{background:#7a4d0d}
+#petal-container{position:fixed;inset:0;pointer-events:none;z-index:1}
+.temple-bg{
+  position:absolute;
+  left:0;bottom:0;
+  height:90%;
+  max-width:65%;
+  width:auto;
+  object-fit:contain;
+  z-index:1;
+  pointer-events:none;
+  opacity:.92;
+}
+.petal{position:absolute;top:-50px;font-size:24px;opacity:.8;animation:fall linear infinite;will-change:transform}
+@keyframes fall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--x-move,0px),110vh) rotate(360deg)}}
+
+#langWrapper{position:relative;z-index:2}
+.content{padding:0;max-width:none;margin:0}
+.invite-page,.event-page,.map-page,.thanks-page{
+  position:relative;
+  min-height:100vh;
+  width:100%;
+  padding:76px 20px 55px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.page-inner{
+  position:relative;
+  z-index:2;
+  width:min(900px,100%);
+  margin:auto;
+  text-align:center;
+  padding:36px 30px;
+  border:none;
+  border-radius:0;
+  background:transparent;
+}
+.invite-page{
+  display:block;
+}
+.invite-page .temple-bg{
+  position:absolute;
+  left:0;
+  bottom:0;
+  top:auto;right:auto;
+  height:68vh;
+  max-height:72vh;
+  width:auto;
+  max-width:50%;
+  object-fit:contain;
+  z-index:1;
+  pointer-events:none;
+  opacity:.92;
+}
+.invite-page .page-inner{
+  position:relative;
+  z-index:2;
+  margin:0 0 0 36%;
+  width:min(420px,42%);
+  min-height:auto;
+  display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
+  padding:36px 24px;
+}
+#title{margin:0 auto 28px;line-height:1.2;color:#8a5812;font-weight:700}
+#groom,#bride{margin:8px 0;color:#5d3a0a;font-weight:700}
+#wed{margin:4px 0;color:#9b671b;font-weight:700}
+#message{max-width:680px;margin:22px auto 0;line-height:1.55;font-weight:600}
+
+.event-page .page-inner,.map-page .page-inner,.thanks-page .page-inner{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.event-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 18px 18px 10px;
+      font-family: "Amarante", serif;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      text-align: center;
+    }
+.event-header .event-title{
+  display:block;font-size:2rem;font-weight:700;color:#7a4d0d;line-height:1.15;
+  width:100%;text-align:center;
+}
+/* ///////////////////////////////// */
+.event-media {
+  width: min(280px, 78%);
+  display: flex;
+  justify-content: center;
+  
+  /* Apply the drop-shadow here so it molds perfectly to the video's irregular edges */
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.16));
+}
+
+.event-media video,
+.event-media img {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  max-height: 280px;
+  object-fit: cover;
+
+  /* Creates a highly uneven, asymmetric amorphous blob */
+  border-radius: 30% 70% 40% 60% / 60% 40% 70% 30%;
+  
+  /* Adds a matching solid border if you still want a distinct outline */
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+/* ////////////////////////// */
+.event-content { 
+  width: 100%;
+  padding: 24px 10px 8px; 
+  font-family: "Caveat Brush", cursive;
+  font-size: 1.45rem;
+  line-height: 1.45;
+  text-align: center;
+
+  /* Glassmorphism Effect */
+  background: rgba(255, 255, 255, 0.15); /* Semi-transparent white */
+  backdrop-filter: blur(12px);          /* Blurs the content behind the glass */
+  -webkit-backdrop-filter: blur(12px);  /* Safari support */
+  border-radius: 16px;                  /* Rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.25); /* Subtle highlight border */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);  /* Soft shadow for depth */
+}
+
+/* .event-content{
+  width:100%;padding:24px 10px 8px;
+  font-family:"Caveat Brush",cursive;font-size:1.45rem;line-height:1.45;text-align:center
+} */
+.event-card{width:100%}
+
+.map-page .page-inner{gap:18px}
+.map-title{font-family:"Amarante",serif;font-size:2rem;color:#7a4d0d;margin:0}
+.map-gif{width:min(240px,80%);max-height:220px;object-fit:contain;border-radius:18px}
+.qr-image{width:170px;max-width:70%;border:5px solid #fff;border-radius:16px;box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.map-link{
+  display:inline-block;margin:0;color:#8d5700;font-weight:bold;text-decoration:none;
+  font-family:"Amarante",serif;font-size:1.05rem;padding:10px 18px;
+  border-radius:999px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8)
+}
+.rounded-iframe{width:min(500px,100%);height:230px;border:none;border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,.14)}
+.thanks-page .page-inner{min-height:65vh}
+.thanks-title{font-family:"Amarante",serif;font-size:2.3rem;color:#7a4d0d;margin:0 0 25px}
+.thanks-text{font-size:1.35rem;line-height:1.6;max-width:700px;margin:0 auto}
+footer{
+  font-family:Arial,sans-serif;background:rgba(255,255,255,.72);padding:18px;
+  text-align:center;font-size:14px;color:#333;border-top:1px solid rgba(120,80,20,.2);
+  position:relative;z-index:10
+}
+footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:underline}
+@media(max-width:600px){
+  #langToggle{top:12px;right:12px}
+  .invite-page,.event-page,.map-page,.thanks-page{padding:65px 12px 35px}
+  .page-inner{padding:25px 15px;border-radius:22px}
+  #title{font-size:2rem}.lang-en h2{font-size:1.8rem}
+  .invite-page .temple-bg{height:60vh;max-width:52%}
+  .invite-page .page-inner{margin-left:50%;width:min(260px,48%)}
+  .event-header{padding:20px 12px}.event-header .event-title{font-size:1.65rem}
+  .event-content{font-size:1.25rem}
+  .rounded-iframe{height:180px}
+}
+
+/* new style for H1 tages  */
+/* .couple-names{
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  text-align: center;
+} */
+
+ .couple-names{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;          /* above temple-bg (z-index:1) and page-inner (z-index:2) */
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+.couple-names *{ pointer-events: auto; }
+
+.thanks-text{
+  font-size:1.35rem;
+  line-height:1.6;
+  max-width:700px;
+  margin:0 auto;
+  white-space: pre-line;   /* add this line */
+}
+
+</style>
+
+</head>
+<body>
+
+  <canvas id="cloudSkyCanvas"></canvas>
+  <div id="petal-container"></div>
+
+  <div class="top-controls">
+    <button id="calendarToggle" title="View wedding dates" aria-label="Open calendar">📅</button>
+    <button id="langToggle">தமிழ்</button>
+  </div>
+
+  <div id="calendarModal" class="calendar-modal" hidden>
+    <div class="calendar-box">
+      <button id="calClose" class="cal-close" aria-label="Close calendar">✕</button>
+      <div class="cal-header">
+        <button id="calPrev" aria-label="Previous month">‹</button>
+        <span id="calMonthLabel"></span>
+        <button id="calNext" aria-label="Next month">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-events">
+        <button class="cal-add-btn" id="addReception">❤️ Add Reception to Google Calendar</button>
+        <button class="cal-add-btn" id="addWedding">❤️ Add Wedding to Google Calendar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="langWrapper" class="lang-en">
+    <div class="content">
+
+      <!-- PAGE 1: INVITATION -->
+      <section class="invite-page" id="page-invite">
+      <img class="temple-bg" src="assets/TempleImg.png" alt="Temple">
+
+      <div class="page-inner">
+        <!-- <h1 id="title">You're Invited!</h1> -->
+      </div>
+
+      <div class="couple-names">
+        <h4 id="title">You're Invited!</h4>
+        <h2 id="groom">Mapu</h2>
+        <h4 id="wed">Weds</h4>
+        <h2 id="bride">Ponnu</h2>
+      </div>
+    </section>
+
+      <!-- PAGE 2: RECEPTION -->
+      <section class="event-page" id="page-reception">
+        <div class="page-inner event-card">
+          <div class="event-header">
+            <span class="event-title" id="e_reception_title">Reception</span>
+            <div class="event-media">
+              <video src="assets/reception.mp4" autoplay loop muted playsinline>
+                <img src="assets/reception.png" alt="Reception"/>
+              </video>
+            </div>
+            <div class="event-content" id="e_reception_content"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: WEDDING CEREMONY -->
+      <section class="event-page" id="page-wedding">
+        <div class="page-inner event-card">
+          <div class="event-header">
+            <span class="event-title" id="e_wedding_title">Wedding Ceremony</span>
+            <div class="event-media">
+              <video src="assets/wedding.mp4" autoplay loop muted playsinline>
+                <img src="assets/wedding.png" alt="Wedding Ceremony"/>
+              </video>
+            </div>
+            <div class="event-content" id="e_wedding_content"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 4: MAP -->
+      <section class="map-page" id="page-map">
+        <div class="page-inner">
+          <h2 class="map-title">Come Let's Celebrate together</h2>
+          <div class="event-media">
+          <img class="map-gif" src="assets/Carloc.gif" alt="Venue"/>
+          </div>
+          <!-- <img class="qr-image" src="assets/qr.png" alt="Location QR"/> -->
+          <a href="https://share.google/r4kkPk3fcFx69xJSY" class="map-link" target="_blank">
+            Click to drive towards location...
+          </a>
+          <iframe class="rounded-iframe"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3913.00809059727!2d77.57775257406205!3d11.260814688918893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba973003f1f2d65%3A0x9b1a308dd450d712!2sMayoora%20Mahal!5e0!3m2!1sen!2sin!4v1789542728234!5m2!1sen!2sin"
+            allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </section>
+
+      <!-- PAGE 5: WARM INVITE / THANKS -->
+      <section class="thanks-page" id="page-thanks">
+        <div class="page-inner">
+          <h2 class="thanks-title">With Love &amp; Warm Regards</h2>
+          <p class="thanks-text" id="thanksMessage"></p>
+          <p class="thanks-text">Thank you for being a part of our special day.</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <footer>
+    Crafted with care🫰 by <strong>Aasai Achagam</strong> |
+    <a href="https://g.co/kgs/Q9JfMxS" target="_blank">🌐 Location </a> |
+    Call or Whatsapp us at <a href="tel:9843319470">📞 98433 19470 </a>
+  </footer>
+  
+  <script>
+    const langContent = {
+      en: {
+        title: "With love and blessings, you are warmly invited to the wedding of...",
+        message: "Two families collide, but don’t you look away,\nWe signed the peace treaty just the other day!\nCome bless the sweet union, witness the grand vow,\nBut let's be honest, you’re just here for the chow!\n...!",
+        groom: "S. Suganth",
+        bride: "B. Indhuvathana",
+        events: {
+          reception: {
+            title: "Reception",
+            content: "On Saturday 12th December 2026 between 6.00 Pm & 9.00 Pm @ Mayura Mahal"
+          },
+          wedding: {
+            title: "Muhurtham",
+            content: "On Sunday 13th December 2026 between 4.00 Am & 5.00 Am @ Mayura Mahal"
+          }
+        }
+      },
+      ta: {
+        title: "இன்பகரமான இந்த நொடியில், எங்கள் திருமண விழாவிற்கு உங்களை அன்புடன் அழைக்கிறோம்.",
+        message: "இரு குடும்பம் இணையுது, சண்டை ஒன்னும் இல்ல,\nசமாதான ஒப்பந்தம் கையெழுத்தாச்சு மெல்ல!\nபுது ஜோடிய வாழ்த்தி நல்லா சிரிச்சிட்டு போங்க,\nமுக்கியமா அந்த கல்யாண சாப்பாட சாப்டுட்டு போங்க!\n...!",
+        groom: "S.சுகந்த்",
+        bride: "B.இந்துவதனா",
+        events: {
+          wedding: {
+            title: "முஹூர்த்தம்",
+            content: "2026 டிசம்பர் 13, ஞாயிற்றுக்கிழமை அன்று அதிகாலை 4.00 மணி முதல் 5.00 மணி வரை, மயூரா மஹாலில்."
+          },
+          reception: {
+            title: "வரவேற்பு",
+            content: "2026 டிசம்பர் 12, சனிக்கிழமை அன்று மாலை 6.00 மணி முதல் இரவு 9.00 மணி வரை, மயூரா மஹாலில்."
+          }
+        }
+      }
+    };
+
+    let currentLang = 'en';
+
+    document.getElementById('langToggle').onclick = () => {
+      currentLang = currentLang === 'en' ? 'ta' : 'en';
+      updateLang();
+    };
+
+    function updateLang() {
+      const data = langContent[currentLang];
+      const wrapper = document.getElementById("langWrapper");
+
+      wrapper.classList.remove('lang-en', 'lang-ta');
+      wrapper.classList.add(currentLang === 'en' ? 'lang-en' : 'lang-ta');
+
+      document.getElementById("title").textContent = data.title;
+      // document.getElementById("message").textContent = data.message;
+      document.getElementById("thanksMessage").textContent = data.message;
+      document.getElementById("bride").textContent = data.bride;
+      document.getElementById("groom").textContent = data.groom;
+      for (let k in data.events) {
+        document.getElementById(`e_${k}_title`).textContent = data.events[k].title;
+        document.getElementById(`e_${k}_content`).textContent = data.events[k].content;
+      }
+
+      document.getElementById('langToggle').textContent = currentLang === 'en' ? 'தமிழ்' : 'English';
+    }
+
+    function createPetal() {
+      const emojis = ["🏵️","🍂","🍁"];
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+      const left = Math.random() * 100;
+      const xMove = (Math.random() - 0.5) * 200;
+
+      p.style.left = `${left}vw`;
+      p.style.animationDuration = `${5 + Math.random() * 5}s`;
+      p.style.opacity = 0.5 + Math.random() * 0.5;
+      p.style.fontSize = `${20 + Math.random() * 10}px`;
+      p.style.setProperty('--x-move', `${xMove}px`);
+      p.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+      document.getElementById('petal-container').appendChild(p);
+      setTimeout(() => p.remove(), 10000);
+    }
+
+    setInterval(createPetal, 300);
+    updateLang();
+  </script>
+
+  <!-- Calendar modal: Dec 2026, 12th & 13th highlighted, Add to Google Calendar -->
+  <script>
+  (function(){
+    const modal = document.getElementById('calendarModal');
+    const toggleBtn = document.getElementById('calendarToggle');
+    const closeBtn = document.getElementById('calClose');
+    const prevBtn = document.getElementById('calPrev');
+    const nextBtn = document.getElementById('calNext');
+    const monthLabel = document.getElementById('calMonthLabel');
+    const grid = document.getElementById('calGrid');
+
+    let viewYear = 2026, viewMonth = 11; // December 2026 (0-indexed)
+
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const dow = ["S","M","T","W","T","F","S"];
+
+    function renderCalendar(){
+      grid.innerHTML = "";
+      dow.forEach(function(d){
+        const el = document.createElement('div');
+        el.className = 'cal-dow';
+        el.textContent = d;
+        grid.appendChild(el);
+      });
+      monthLabel.textContent = monthNames[viewMonth] + " " + viewYear;
+
+      const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++){
+        const el = document.createElement('div');
+        el.className = 'cal-day empty';
+        grid.appendChild(el);
+      }
+      for (let day = 1; day <= daysInMonth; day++){
+        const el = document.createElement('div');
+        const isHeartDay = (viewYear === 2026 && viewMonth === 11 && (day === 12 || day === 13));
+        el.className = 'cal-day' + (isHeartDay ? ' heart' : '');
+        el.innerHTML = isHeartDay ? (day + '<span class="heart-icon">❤️</span>') : String(day);
+        grid.appendChild(el);
+      }
+    }
+
+    toggleBtn.addEventListener('click', function(){
+      modal.hidden = false;
+      renderCalendar();
+    });
+    closeBtn.addEventListener('click', function(){ modal.hidden = true; });
+    modal.addEventListener('click', function(e){ if (e.target === modal) modal.hidden = true; });
+    prevBtn.addEventListener('click', function(){
+      viewMonth--; if (viewMonth < 0){ viewMonth = 11; viewYear--; }
+      renderCalendar();
+    });
+    nextBtn.addEventListener('click', function(){
+      viewMonth++; if (viewMonth > 11){ viewMonth = 0; viewYear++; }
+      renderCalendar();
+    });
+
+    function buildGCalLink(title, startUTC, endUTC, details, location){
+      const base = 'https://www.google.com/calendar/render?action=TEMPLATE';
+      const params = new URLSearchParams({
+        text: title,
+        dates: startUTC + '/' + endUTC,
+        details: details,
+        location: location
+      });
+      return base + '&' + params.toString();
+    }
+
+    // Reception: Sat 12 Dec 2026, 6:00 PM - 9:00 PM IST  -> 12:30-15:30 UTC
+    document.getElementById('addReception').addEventListener('click', function(){
+      const link = buildGCalLink(
+        'Reception - Suganth Weds Indhuvathana',
+        '20261212T123000Z',
+        '20261212T153000Z',
+        'Reception celebration at Mayoora Mahal',
+        'Mayoora Mahal'
+      );
+      window.open(link, '_blank');
+    });
+
+    // Wedding Muhurtham: Sun 13 Dec 2026, 4:00 AM - 5:00 AM IST -> 22:30-23:30 UTC on 12 Dec
+    document.getElementById('addWedding').addEventListener('click', function(){
+      const link = buildGCalLink(
+        'Wedding Muhurtham - Suganth and Indhuvathana Muhurtham',
+        '20261212T223000Z',
+        '20261212T233000Z',
+        'Wedding ceremony at Mayoora Mahal',
+        'Mayoora Mahal'
+      );
+      window.open(link, '_blank');
+    });
+  })();
+  </script>
+
+  <!-- Animated sky background, adapted from the "Cloud Sky" WebGL shader (Background.js) into
+       plain JS since this page is static HTML rather than a React app. Same shader math and
+       default look/motion (coverage, size, softness, shadow, cirrus, sun glow, pointer parallax). -->
+  <script>
+  (function(){
+    const MAX_DPR = 2;
+    const NEAR_DRIFT = 0.055, FAR_DRIFT = 0.026, CIRRUS_DRIFT = 0.014;
+
+    // Fixed uniform values, computed from the component's default props merged with its
+    // exported preset (cirrus 100 / shadow 70 / softness 200, sun x100 y100 glow #fff,
+    // pointer wind 300 / damping 50 / parallax 300, density 100, speed 64, size 130).
+    const COVERAGE = 1.0;
+    const SPEED = 1.28;
+    const SIZE = 1.3;
+    const SOFTNESS = 2.25;
+    const SHADOW = 0.7;
+    const CIRRUS = 1.0;
+    const SUN_X = 1.0, SUN_Y = 1.0;
+    const PARALLAX = 3.0, WIND = 3.0, DAMPING = 50;
+
+    const ZENITH  = [0.0, 0.4588, 1.0];      // #0075FF
+    const HORIZON = [0.7059, 0.8235, 0.9412];// #B4D2F0
+    const CLOUD   = [1.0, 1.0, 1.0];         // #FFFFFF
+    const GLOW    = [1.0, 1.0, 1.0, 1.0];    // #FFFFFF, alpha 1
+
+    const VERT_SRC = "attribute vec2 a_pos; void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }";
+
+    const FRAG_SRC = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+
+uniform vec2 uRes;
+uniform float uNearX, uFarX, uCirrusX;
+uniform float uCoverage, uSize, uSoftness, uShadow, uCirrus;
+uniform vec3 uZenith, uHorizon, uCloud;
+uniform vec4 uGlow;
+uniform vec2 uSun;
+uniform vec2 uParallax;
+
+vec2 hash22(vec2 p){
+  vec3 q = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
+  q += dot(q, q.yzx + 33.33);
+  return fract((q.xx + q.yz) * q.zy);
+}
+
+float hash12(vec2 p){
+  vec3 q = fract(vec3(p.xyx) * 0.1031);
+  q += dot(q, q.yzx + 33.33);
+  return fract((q.x + q.y) * q.z);
+}
+
+float vnoise(vec2 x){
+  vec2 i = floor(x), f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash12(i), hash12(i + vec2(1.0, 0.0)), f.x),
+             mix(hash12(i + vec2(0.0, 1.0)), hash12(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+
+float fbm(vec2 p){
+  float a = 0.5, s = 0.0;
+  for (int i = 0; i < 4; i++){
+    s += a * vnoise(p);
+    p *= 2.03;
+    a *= 0.5;
+  }
+  return s;
+}
+
+vec2 blobs(vec2 uv, float seed){
+  vec2 id = floor(uv), f = fract(uv);
+
+  float best = -1e4;
+  float wsum = 0.0, ysum = 0.0;
+  float wMax = min(2.150, 0.72 * uSize);
+  float reach = min(2.0, ceil(wMax + 0.85) - 1.0);
+  for (int j = -2; j <= 2; j++){
+    for (int i = -2; i <= 2; i++){
+      vec2 o = vec2(float(i), float(j));
+      if (max(abs(o.x), abs(o.y)) > reach) continue;
+      vec2 h = hash22(id + o + seed);
+
+      if (fract(h.x * 37.1) > uCoverage) continue;
+      vec2 c = o + 0.15 + h * 0.7;
+      float w = min(2.150, (0.30 + 0.42 * fract(h.y * 19.7)) * uSize);
+      vec2 d = f - c;
+
+      float ry = (d.y > 0.0 ? 0.340 : 0.190) * uSize * (0.8 + 0.5 * fract(h.y * 7.3));
+      float e = length(vec2(d.x / max(w, 1e-3), d.y / max(ry, 1e-3)));
+      float val = 1.0 - e;
+      float yN = d.y / max(ry, 1e-3);
+      if (val > best){
+        float k = exp(12.0 * (best - val));
+        wsum = wsum * k + 1.0;
+        ysum = ysum * k + yN;
+        best = val;
+      } else {
+        float g = exp(12.0 * (val - best));
+        wsum += g;
+        ysum += g * yN;
+      }
+    }
+  }
+  return vec2(best, ysum / max(wsum, 1e-4));
+}
+
+vec2 cloudField(vec2 uv, float seed, float detailScale){
+  vec2 b = blobs(uv, seed);
+
+  float n = fbm(uv * detailScale + seed * 3.1) * 0.72
+          + fbm(uv * detailScale * 3.3 + seed * 7.7) * 0.28;
+  return vec2(b.x - (1.0 - n) * 0.700, b.y);
+}
+
+vec3 shadeCloud(float dyNorm, vec3 sky){
+  float t = smoothstep(-0.95, 0.25, dyNorm);
+  vec3 base = mix(uCloud * 0.52, sky, 0.34);
+  return mix(mix(uCloud, base, uShadow), uCloud, t);
+}
+
+void main(){
+  vec2 frag = gl_FragCoord.xy / max(uRes.y, 1.0);
+  float aspect = uRes.x / max(uRes.y, 1.0);
+  vec2 p = vec2(frag.x, frag.y);
+
+  vec3 sky = mix(uHorizon, uZenith, smoothstep(-0.15, 1.05, p.y));
+  vec2 sunP = vec2(uSun.x * aspect, uSun.y);
+  float sd = length(p - sunP);
+
+  sky += uGlow.rgb * uGlow.a * exp(-sd * 3.4) * 0.30;
+
+  vec3 col = sky;
+
+  if (uCirrus > 0.0) {
+    vec2 cuv = vec2(p.x * 1.4 + uCirrusX, p.y * 5.5);
+    float veil = fbm(cuv) * fbm(cuv * 2.3 + 9.0);
+    veil = smoothstep(0.24, 0.55, veil) * smoothstep(0.15, 0.7, p.y);
+    col = mix(col, uCloud, veil * uCirrus * 0.5);
+  }
+
+  vec2 fuv = vec2(p.x + uFarX, p.y) * 2.150 + uParallax * 0.4;
+  vec2 fd = cloudField(fuv, 17.0, 11.0);
+  float fa = clamp(fd.x * uSoftness, 0.0, 1.0);
+  if (fa > 0.0) {
+    vec3 lit = shadeCloud(fd.y, sky);
+
+    col = mix(col, mix(lit, sky, 0.550), fa);
+  }
+
+  vec2 nuv = vec2(p.x + uNearX, p.y) * 1.050 + uParallax;
+  vec2 nd = cloudField(nuv, 3.0, 8.5);
+  float na = clamp(nd.x * uSoftness, 0.0, 1.0);
+  if (na > 0.0) {
+    vec3 lit = shadeCloud(nd.y, sky);
+
+    float above = clamp(cloudField(nuv + vec2(0.0, 0.085), 3.0, 8.5).x * uSoftness, 0.0, 1.0);
+    lit *= 1.0 - 0.18 * uShadow * above;
+
+    lit += uGlow.rgb * uGlow.a * 0.22 * exp(-length(p - sunP) * 1.6);
+    col = mix(col, lit, na);
+  }
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+    function compile(gl, type, src){
+      const sh = gl.createShader(type);
+      gl.shaderSource(sh, src);
+      gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)){
+        console.error("CloudSky shader:", gl.getShaderInfoLog(sh));
+        gl.deleteShader(sh);
+        return null;
+      }
+      return sh;
+    }
+
+    function initCloudSky(){
+      const canvas = document.getElementById('cloudSkyCanvas');
+      if (!canvas) return;
+      const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false });
+      if (!gl){ console.error('CloudSky: WebGL unavailable'); return; }
+
+      const vs = compile(gl, gl.VERTEX_SHADER, VERT_SRC);
+      const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG_SRC);
+      if (!vs || !fs) return;
+
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)){
+        console.error('CloudSky link:', gl.getProgramInfoLog(prog));
+        return;
+      }
+      gl.useProgram(prog);
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const aPos = gl.getAttribLocation(prog, 'a_pos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      const locs = {};
+      function u(name){
+        if (!(name in locs)) locs[name] = gl.getUniformLocation(prog, name);
+        return locs[name];
+      }
+
+      let last = performance.now();
+      let nearX = 0, farX = 0, cirrusX = 0, leanX = 0, leanY = 0;
+      const ptr = { x: 0, y: 0 };
+
+      window.addEventListener('pointermove', function(e){
+        ptr.x = (e.clientX / window.innerWidth) * 2 - 1;
+        ptr.y = 1 - (e.clientY / window.innerHeight) * 2;
+      });
+
+      function render(now){
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+
+        const k = 1 - Math.exp(-DAMPING * 0.12 * dt);
+        leanX += (ptr.x - leanX) * k;
+        leanY += (ptr.y - leanY) * k;
+
+        const gust = 1 + leanX * WIND;
+        const rate = SPEED * gust;
+        nearX = (nearX - NEAR_DRIFT * rate * dt) % 1000;
+        farX = (farX - FAR_DRIFT * rate * dt) % 1000;
+        cirrusX = (cirrusX - CIRRUS_DRIFT * rate * dt) % 1000;
+
+        const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+        const cw = canvas.clientWidth || window.innerWidth;
+        const ch = canvas.clientHeight || window.innerHeight;
+        const bw = Math.max(1, Math.round(cw * dpr));
+        const bh = Math.max(1, Math.round(ch * dpr));
+        if (canvas.width !== bw || canvas.height !== bh){
+          canvas.width = bw;
+          canvas.height = bh;
+        }
+        gl.viewport(0, 0, bw, bh);
+
+        gl.uniform2f(u('uRes'), bw, bh);
+        gl.uniform1f(u('uNearX'), nearX);
+        gl.uniform1f(u('uFarX'), farX);
+        gl.uniform1f(u('uCirrusX'), cirrusX);
+        gl.uniform1f(u('uCoverage'), COVERAGE);
+        gl.uniform1f(u('uSize'), SIZE);
+        gl.uniform1f(u('uSoftness'), SOFTNESS);
+        gl.uniform1f(u('uShadow'), SHADOW);
+        gl.uniform1f(u('uCirrus'), CIRRUS);
+        gl.uniform2f(u('uSun'), SUN_X, SUN_Y);
+        gl.uniform2f(u('uParallax'), -leanX * PARALLAX * 0.07, -leanY * PARALLAX * 0.05);
+        gl.uniform3f(u('uZenith'), ZENITH[0], ZENITH[1], ZENITH[2]);
+        gl.uniform3f(u('uHorizon'), HORIZON[0], HORIZON[1], HORIZON[2]);
+        gl.uniform3f(u('uCloud'), CLOUD[0], CLOUD[1], CLOUD[2]);
+        gl.uniform4f(u('uGlow'), GLOW[0], GLOW[1], GLOW[2], GLOW[3]);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', initCloudSky);
+    } else {
+      initCloudSky();
+    }
+  })();
+  </script>
+</body>
+</html>
