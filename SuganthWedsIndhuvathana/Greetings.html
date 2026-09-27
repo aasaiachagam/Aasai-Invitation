@@ -525,6 +525,38 @@ footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:under
           let last = performance.now();
           let nearX = 0, farX = 0, cirrusX = 0, leanX = 0, leanY = 0;
           const ptr = { x: 0, y: 0 };
+          // adding code for Gyro 
+            const gyro = { x: 0, y: 0, active: false };
+
+            window.addEventListener('pointermove', function(e){
+              ptr.x = (e.clientX / window.innerWidth) * 2 - 1;
+              ptr.y = 1 - (e.clientY / window.innerHeight) * 2;
+            });
+
+            function handleOrientation(e){
+              if (e.gamma === null || e.beta === null) return;
+              const gamma = Math.max(-45, Math.min(45, e.gamma));       // left-right tilt
+              const beta  = Math.max(-45, Math.min(45, e.beta - 45));   // front-back tilt (offset for natural hold angle)
+              gyro.x = gamma / 45;
+              gyro.y = -beta / 45;
+              gyro.active = true;
+            }
+
+            if (window.DeviceOrientationEvent) {
+              if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // iOS 13+ requires a tap before it will grant sensor access
+                document.body.addEventListener('click', function requestGyro(){
+                  DeviceOrientationEvent.requestPermission().then(function(state){
+                    if (state === 'granted') window.addEventListener('deviceorientation', handleOrientation);
+                  }).catch(function(){});
+                  document.body.removeEventListener('click', requestGyro);
+                }, { once: true });
+              } else {
+                // Android Chrome and others fire this with no permission prompt
+                window.addEventListener('deviceorientation', handleOrientation);
+              }
+            }
+          // gyro ends
 
           window.addEventListener('pointermove', function(e){
             ptr.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -536,8 +568,13 @@ footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:under
             last = now;
 
             const k = 1 - Math.exp(-DAMPING * 0.12 * dt);
-            leanX += (ptr.x - leanX) * k;
-            leanY += (ptr.y - leanY) * k;
+            // leanX += (ptr.x - leanX) * k;
+            // leanY += (ptr.y - leanY) * k;
+            // Adding Gyro effect below
+            const px = gyro.active ? gyro.x : ptr.x;
+            const py = gyro.active ? gyro.y : ptr.y;
+            leanX += (px - leanX) * k;
+            leanY += (py - leanY) * k;
 
             const gust = 1 + leanX * WIND;
             const rate = SPEED * gust;
