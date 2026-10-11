@@ -1303,11 +1303,11 @@ footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:under
         ? langContent[currentLang] : null;
       if (i === 0){
         const ev = data ? data.events.reception : { title:'Reception', content:'Join us for the reception celebration.' };
-        return { cls:'board-reception', icon:'🎉', title: ev.title, body: ev.content, cta:'Continue to Ceremony ➜' };
+        return { cls:'board-reception', icon:'🎉', title: ev.title, body: ev.content, cta:'Continue to muhurtham ➜' };
       }
       if (i === 1){
         const ev = data ? data.events.wedding : { title:'Muhurtham', content:'Join us for the wedding ceremony.' };
-        return { cls:'board-temple', icon:'🛕', title: ev.title, body: ev.content, cta:'Continue to the Road ➜' };
+        return { cls:'board-temple', icon:'🛕', title: ev.title, body: ev.content, cta:'Find the venue ➜' };
       }
       if (i === 2){
         return { cls:'board-travel', icon:'📍', title:'Venue Location', body:'Mayoora Mahal\nTap below to get directions.', cta:'Continue to Finale ➜', mapLink:true };
