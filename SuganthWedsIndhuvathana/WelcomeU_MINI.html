@@ -22,6 +22,72 @@
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
+  /*adding loder content  */
+  /* Full-screen loader overlay */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #ffffff; /* Background color behind the loader */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999; /* Keeps it on top of everything */
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    
+    /* SVG Heart Styling */
+    .heart-svg {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .heart-svg path {
+      fill: none;
+      stroke: #ff4757; /* Heart outline color */
+      stroke-width: 2;
+      stroke-linecap: round;
+      
+      /* The Magic: Creates the "drawing" illusion */
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: drawHeart 2s linear infinite;
+    }
+    
+    /* Keyframe Animation to draw and erase the heart */
+    @keyframes drawHeart {
+      0% {
+        stroke-dashoffset: 100;
+      }
+      50% {
+        stroke-dashoffset: 0;
+        fill: rgba(255, 71, 87, 0); /* Keep fill transparent while drawing */
+      }
+      70% {
+        stroke-dashoffset: 0;
+        fill: rgba(255, 71, 87, 1); /* Heart fills up with color */
+      }
+      100% {
+        stroke-dashoffset: 0;
+        fill: rgba(255, 71, 87, 1);
+        opacity: 0; /* Fades out before restarting loop if loading takes long */
+      }
+    }
+    
+    /* Hide content initially to prevent layout flashing */
+    #main-content {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Class to reveal content via JS */
+    .content-loaded #main-content {
+      opacity: 1;
+    }
+
+  /*loader content ends  */
 body{
   margin:0;
   overflow-x:hidden;
@@ -360,8 +426,15 @@ footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:under
 
 </head>
 <body>
-
-  <!--<img class="temple-fixed" src="assets/TEMPLE_MINI.png" alt="Temple">-->
+  <!-- The Loader Overlay -->
+    <div id="loader-wrapper">
+      <svg class="heart-svg" viewBox="0 0 32 29.6">
+        <!-- The heart path -->
+        <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+          c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+      </svg>
+    </div>
+  <!--<img class="temple-fixed" src="assets/TEMPLE_MINI01.png" alt="Temple">-->
   <div id="meadowHost"><canvas id="meadowCanvas"></canvas></div>
   <!-- Voxel sunset meadow background (Minecraft-style land: swaying grass, flowers, drifting block clouds).
        Ported from the "Still Sunset Meadow" component to plain JS; needs three.js. -->
@@ -1207,7 +1280,7 @@ function initMeadow(host, canvas, userProps) {
     // flowers draw in front of its base). It lives in the fixed background, so it never scrolls away.
     let temple = null;
     const loadTemple = () => {
-        new THREE.TextureLoader().load("assets/TEMPLE_MINI.png", (tex) => {
+        new THREE.TextureLoader().load("assets/TEMPLE_MINI01.png", (tex) => {
             if (THREE.SRGBColorSpace)
                 tex.colorSpace = THREE.SRGBColorSpace;
             const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.25, side: THREE.DoubleSide });
@@ -2744,5 +2817,24 @@ void main(){vec2 frag=gl_FragCoord.xy/max(uRes.y,1.0);float aspect=uRes.x/max(uR
   })();
   </script>
 
+  <!-- Script to close loader -->
+<script>
+        window.addEventListener('load', function() {
+        const loader = document.getElementById('loader-wrapper');
+        
+        // 1. Fade out the loader overlay
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        
+        // 2. Fade in the background content
+        document.body.classList.add('content-loaded');
+        
+        // 3. Optional: Remove loader from DOM entirely after fade transition finishes
+        setTimeout(() => {
+          loader.remove();
+        }, 500);
+      });
+</script>
+  <!-- loader end script ends -->
 </body>
 </html>
