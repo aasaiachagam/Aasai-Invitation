@@ -59,7 +59,7 @@ html{scroll-behavior:smooth}
           border-radius: 50px 50px 0 0;
           /* Masking/clipping mechanism for the shading animation */
           background: linear-gradient(to top, #ff2a74 var(--shade, 0%), transparent var(--shade, 0%));
-          border: 2px solid #ff2a74;
+          border: 2px solid #4B8BDE;
           border-bottom: none;
           animation: heart-shading 3s linear infinite;
         }
@@ -351,7 +351,8 @@ body{
   font-size: 1.45rem;
   line-height: 1.45;
   text-align: center;
-  color: #b80e0e; /* Dark text reads better against bright macOS-style glass tints */
+  color: #1a1a1a; /* Much higher contrast across pastel/bright backgrounds */
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
 }
 
 /* new code for glass ends  */
