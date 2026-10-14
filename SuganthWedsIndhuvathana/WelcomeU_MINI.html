@@ -23,71 +23,83 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
   /*adding loder content  */
-     #loader-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #ffffff; /* Background color blocking the content */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999; /* Ensures it stays on top of everything */
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+     /* Fullscreen Loader Overlay */
+        #heart-loader-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: linear-gradient(to bottom, #FFFFFF 0%, #E5E6E4 100%);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 99999; /* Ensures it stays on top of all background content */
+          transition: opacity 0.5s ease, visibility 0.5s ease;
         }
-
-        /* Class added via JS to smoothly fade out the loader */
+        
+        /* Neon Heart Base Shape */
+        .neon-heart {
+          position: relative;
+          width: 100px;
+          height: 90px;
+          background-color: transparent;
+          /* Neon glow effect outline */
+          filter: drop-shadow(0 0 10px #ff2a74) drop-shadow(0 0 30px #ff2a74); 
+        }
+        
+        /* Creating the heart loops using pseudo-elements */
+        .neon-heart::before,
+        .neon-heart::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          width: 50px;
+          height: 80px;
+          border-radius: 50px 50px 0 0;
+          /* Masking/clipping mechanism for the shading animation */
+          background: linear-gradient(to top, #ff2a74 var(--shade, 0%), transparent var(--shade, 0%));
+          border: 2px solid #ff2a74;
+          border-bottom: none;
+          animation: heart-shading 3s linear infinite;
+        }
+        
+        .neon-heart::before {
+          left: 50px;
+          transform: rotate(-45deg);
+          transform-origin: 0 100%;
+        }
+        
+        .neon-heart::after {
+          left: 0;
+          transform: rotate(45deg);
+          transform-origin: 100% 100%;
+        }
+        
+        /* Shading Animation (Fills the heart from bottom to top) */
+        @keyframes heart-shading {
+          0% {
+            --shade: 0%;
+          }
+          100% {
+            --shade: 100%;
+          }
+        }
+        
+        /* CSS variable support fallback for keyframes */
+        @property --shade {
+          syntax: '<percentage>';
+          inherits: false;
+          initial-value: 0%;
+        }
+        
+        /* Class to hide the loader smoothly */
         .loader-hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
         }
 
-        /* 2. THE HEART ANIMATION CONTAINER */
-        .heart-loader {
-            position: relative;
-            width: 80px;
-            height: 40px;
-        }
-
-        /* Common styles for both hearts */
-        .heart-loader::before,
-        .heart-loader::after {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 35px;
-            background: #ff4d6d; /* Heart Color */
-            border-radius: 20px 20px 0 0;
-        }
-
-        /* Left Heart position and rotation */
-        .heart-loader::before {
-            left: 20px;
-            transform: rotate(-45deg);
-            transform-origin: 0 100%;
-            animation: leftHeart 1.5s infinite ease-in-out;
-        }
-
-        /* Right Heart position and rotation */
-        .heart-loader::after {
-            left: 20px;
-            transform: rotate(45deg);
-            transform-origin: 100% 100%;
-            animation: rightHeart 1.5s infinite ease-in-out;
-        }
-
-        /* 3. ANIMATION KEYFRAMES (The Joining Action) */
-        @keyframes leftHeart {
-            0%, 100% { transform: translate(-15px, 0) rotate(-45deg); }
-            50% { transform: translate(0, 0) rotate(-45deg); }
-        }
-
-        @keyframes rightHeart {
-            0%, 100% { transform: translate(15px, 0) rotate(45deg); }
-            50% { transform: translate(0, 0) rotate(45deg); }
-        }
   /*loader content ends  */
 body{
   margin:0;
@@ -427,10 +439,13 @@ footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:under
 
 </head>
 <body>
-  <!-- The Loader Overlay -->
-    <div id="loader-wrapper">
-        <div class="heart-loader"></div>
-    </div>
+  <!-- The Loader Overlay starts -->
+   <!-- Neon Heart Loader Overlay -->
+      <div id="heart-loader-overlay">
+        <div class="neon-heart"></div>
+      </div>
+<!-- LOader ends  -->
+  
   <!--<img class="temple-fixed" src="assets/TEMPLE_MINI01.png" alt="Temple">-->
   <div id="meadowHost"><canvas id="meadowCanvas"></canvas></div>
   <!-- Voxel sunset meadow background (Minecraft-style land: swaying grass, flowers, drifting block clouds).
@@ -2815,23 +2830,19 @@ void main(){vec2 frag=gl_FragCoord.xy/max(uRes.y,1.0);float aspect=uRes.x/max(uR
   </script>
 
   <!-- Script to close loader -->
-<script>
-        window.addEventListener('load', function() {
-        const loader = document.getElementById('loader-wrapper');
-        
-        // 1. Fade out the loader overlay
-        loader.style.opacity = '0';
-        loader.style.visibility = 'hidden';
-        
-        // 2. Fade in the background content
-        document.body.classList.add('content-loaded');
-        
-        // 3. Optional: Remove loader from DOM entirely after fade transition finishes
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        // Set your fixed time in milliseconds (e.g., 3000ms = 3 seconds)
+        const fixedTime = 3000; 
+    
         setTimeout(() => {
-          loader.remove();
-        }, 500);
+          const loader = document.getElementById('heart-loader-overlay');
+          if (loader) {
+            loader.classList.add('loader-hidden');
+          }
+        }, fixedTime);
       });
-</script>
+    </script>
   <!-- loader end script ends -->
 </body>
 </html>
