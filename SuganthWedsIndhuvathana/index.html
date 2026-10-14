@@ -363,11 +363,136 @@ body{color:#f6eefc}
 .temple-fixed{position:fixed;right:0;bottom:0;transform:translateY(0);height:40vh;width:auto;max-width:62vw;object-fit:contain;object-position:right bottom;z-index:1;pointer-events:none}
 .couple-names{top:11vh !important;transform:translate(-50%,0) !important}
 @media(max-width:600px){.temple-fixed{height:34vh;max-width:70vw}.couple-names{top:9vh !important}}
+
+/* adding css for gilmmer valy  */
+/* Full-screen WebGL background */
+#meadowHost {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#meadowCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Mobile portrait */
+@media (max-width: 600px) {
+  #meadowHost,
+  #meadowCanvas {
+    width: 100%;
+  }
+
+  #meadowHost {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  #meadowCanvas {
+    height: 100%;
+  }
+}
+/* gillmeer valy background ends */
 </style>
+
+<!-- Loader Starts  -->
+<style>
+    /* Fullscreen Loader Overlay */
+    #heart-loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000000; /* Solid black background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999; /* Ensures it stays on top of all background content */
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    /* Neon Heart Base Shape */
+    .neon-heart {
+      position: relative;
+      width: 100px;
+      height: 90px;
+      background-color: transparent;
+      /* Neon glow effect outline */
+      filter: drop-shadow(0 0 10px #ff2a74) drop-shadow(0 0 30px #ff2a74); 
+    }
+
+    /* Creating the heart loops using pseudo-elements */
+    .neon-heart::before,
+    .neon-heart::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 50px;
+      height: 80px;
+      border-radius: 50px 50px 0 0;
+      /* Masking/clipping mechanism for the shading animation */
+      background: linear-gradient(to top, #ff2a74 var(--shade, 0%), transparent var(--shade, 0%));
+      border: 2px solid #ff2a74;
+      border-bottom: none;
+      animation: heart-shading 3s linear infinite;
+    }
+
+    .neon-heart::before {
+      left: 50px;
+      transform: rotate(-45deg);
+      transform-origin: 0 100%;
+    }
+
+    .neon-heart::after {
+      left: 0;
+      transform: rotate(45deg);
+      transform-origin: 100% 100%;
+    }
+
+    /* Shading Animation (Fills the heart from bottom to top) */
+    @keyframes heart-shading {
+      0% {
+        --shade: 0%;
+      }
+      100% {
+        --shade: 100%;
+      }
+    }
+
+    /* CSS variable support fallback for keyframes */
+    @property --shade {
+      syntax: '<percentage>';
+      inherits: false;
+      initial-value: 0%;
+    }
+
+    /* Class to hide the loader smoothly */
+    .loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+</style>
+<!-- Loder ends  -->
 
 </head>
 <body>
-
+  <!-- for loader  -->
+  <div id="heart-loader-overlay">
+    <div class="neon-heart"></div>
+  </div>  
+  <!-- loader ends  -->
   <img class="temple-fixed" src="assets/TEMPLE2.png" alt="Temple">
   <div id="meadowHost"><canvas id="meadowCanvas"></canvas></div>
   <!-- Glimmer Vale background (twilight hills of twinkling light, daisies and grass), ported to plain JS / WebGL2. -->
@@ -655,7 +780,7 @@ function terrH(x, d, w) {
         0.6 * (Math.sin(1.86 * a + 2 * w.ph + 1.3) - Math.sin(1.86 * a + 1.3));
     return baseH(x, d, w) + w.amp * e * wv;
 }
-function crestYAt(fx, w, camX, camY, c, s) {
+function crestYAt(fx, w, camX, camY, c, s, tanV = TAN_V) {
     const ndcX = fx * 2 - 1;
     let best = -Infinity;
     for (let d = 3; d < 70; d += 0.2) {
@@ -663,7 +788,7 @@ function crestYAt(fx, w, camX, camY, c, s) {
         const ry = terrH(x, d, w) - camY;
         const depth = -ry * s + d * c;
         const yv = ry * c + d * s;
-        const ny = yv / depth / TAN_V;
+        const ny = yv / depth / tanV;
         if (ny > best)
             best = ny;
     }
@@ -1585,6 +1710,9 @@ function initGlimmer(root, canvas, props) {
         const { w: W, h: H } = sizeRef.current;
         if (W < 2 || H < 2)
             return;
+        // Preserve the scene's proportions across screen orientations
+        const aspect = W / H;
+        const tanV = TAN_H / aspect;
         const dpr = Math.min(1.5, window.devicePixelRatio || 1);
         const cw = Math.round(W * dpr), ch = Math.round(H * dpr);
         if (canvas.width !== cw || canvas.height !== ch || !scene || scene.w !== cw || scene.h !== ch) {
@@ -1619,7 +1747,9 @@ function initGlimmer(root, canvas, props) {
         };
         const hotX = num(adv.hotspotX, 65) / 100;
         const hotS = num(adv.hotspotStrength, 70) / 100;
-        const hotY = crestYAt(hotX, wave, camX, camY, cosP, sinP) + 0.06;
+        const hotY = crestYAt(
+                      hotX, wave, camX, camY, cosP, sinP, tanV
+                  ) + 0.06;
         const glowS = (num(adv.glowStrength, 60) / 100) * (1 + 0.4 * P.d * hk);
         const swayK = num(adv.sway, 50) / 50;
         const flowerK = (num(adv.flowerSize, 100) / 100) * scaleF;
@@ -1738,7 +1868,7 @@ function initGlimmer(root, canvas, props) {
         const A = (FAR + NEAR) / (FAR - NEAR), B = (-2 * FAR * NEAR) / (FAR - NEAR);
         const setWorld = (u) => {
             gl.uniform4f(u.u_cam, camX, camY, cosP, sinP);
-            gl.uniform4f(u.u_proj, TAN_H, TAN_V, A, B);
+            gl.uniform4f(u.u_proj, TAN_H, tanV, A, B);
             gl.uniform4f(u.u_wave, wave.si, wave.amp, wave.k, wave.ph);
             gl.uniform4f(u.u_fog, fogC[0], fogC[1], fogC[2], fogDist);
             gl.uniform4fv(u["u_r[0]"], RIDGES);
@@ -3071,6 +3201,20 @@ void main(){vec2 frag=gl_FragCoord.xy/max(uRes.y,1.0);float aspect=uRes.x/max(uR
       win: function(){ if (state === 'playing') triggerStageWin(); }, ship: ship };
   })();
   </script>
+<!-- for loader  -->
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Set your fixed time in milliseconds (e.g., 3000ms = 3 seconds)
+    const fixedTime = 3000; 
 
+    setTimeout(() => {
+      const loader = document.getElementById('heart-loader-overlay');
+      if (loader) {
+        loader.classList.add('loader-hidden');
+      }
+    }, fixedTime);
+  });
+</script>
+<!-- loader ends  -->
 </body>
 </html>
