@@ -361,7 +361,7 @@ footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:under
 </head>
 <body>
 
-  <img class="temple-fixed" src="assets/TEMPLE_MINI.png" alt="Temple">
+  <!--<img class="temple-fixed" src="assets/TEMPLE_MINI.png" alt="Temple">-->
   <div id="meadowHost"><canvas id="meadowCanvas"></canvas></div>
   <!-- Voxel sunset meadow background (Minecraft-style land: swaying grass, flowers, drifting block clouds).
        Ported from the "Still Sunset Meadow" component to plain JS; needs three.js. -->
@@ -1207,7 +1207,7 @@ function initMeadow(host, canvas, userProps) {
     // flowers draw in front of its base). It lives in the fixed background, so it never scrolls away.
     let temple = null;
     const loadTemple = () => {
-        new THREE.TextureLoader().load("assets/TempleImg.png", (tex) => {
+        new THREE.TextureLoader().load("assets/TEMPLE_MINI.png", (tex) => {
             if (THREE.SRGBColorSpace)
                 tex.colorSpace = THREE.SRGBColorSpace;
             const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.25, side: THREE.DoubleSide });
