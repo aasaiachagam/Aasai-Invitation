@@ -106,7 +106,7 @@ body{
   overflow-x:hidden;
   color:#5a3e0b;
   min-height:100vh;
-  background:linear-gradient(180deg, #E2A8AE 0%, #F8A68E 30%, #2E4410 70%, #49530e 100%); /* fallback if WebGL is unavailable; the meadow canvas normally covers this */
+  background: #49530e;/*linear-gradient(180deg, #E2A8AE 0%, #F8A68E 30%, #2E4410 70%, #49530e 100%); /* fallback if WebGL is unavailable; the meadow canvas normally covers this */
 }
 #meadowCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #meadowHost{
@@ -2835,7 +2835,7 @@ void main(){vec2 frag=gl_FragCoord.xy/max(uRes.y,1.0);float aspect=uRes.x/max(uR
     <script>
       window.addEventListener('DOMContentLoaded', () => {
         // Set your fixed time in milliseconds (e.g., 3000ms = 3 seconds)
-        const fixedTime = 3000; 
+        const fixedTime = 2000; 
     
         setTimeout(() => {
           const loader = document.getElementById('heart-loader-overlay');
