@@ -27,14 +27,15 @@ body{
   overflow-x:hidden;
   color:#5a3e0b;
   min-height:100vh;
-  background:linear-gradient(180deg,#E2A8AE 0%,#F8A68E 50%,#2E4410 50%,#2E4410 100%); /* fallback if WebGL is unavailable; the meadow canvas normally covers this */
+  background: #0b0818;/* ch-17oct=01 linear-gradient(180deg,#E2A8AE 0%,#F8A68E 50%,#2E4410 50%,#2E4410 100%); /* fallback if WebGL is unavailable; the meadow canvas normally covers this */
 }
 #meadowCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #meadowHost{
   position:fixed;
   inset:0;
   width:100%;
-  height:100%;
+  height:100%;          /* fallback for old browsers */
+  height:100lvh;        /* ch-17oct=02 the fix: tallest screen height, so it never resizes while scrolling */
   z-index:0;
   display:block;
   pointer-events:none;
@@ -3138,15 +3139,16 @@ void main(){vec2 frag=gl_FragCoord.xy/max(uRes.y,1.0);float aspect=uRes.x/max(uR
     }
     function drawGem(g){
       const bob = Math.sin(runTime * 3 + g.phase) * 4;
+      const s = g.r * 2.5;
       ctx.save();
       ctx.globalAlpha = Math.max(0, 1 - g.fade);
       ctx.translate(g.x, g.y + bob);
-      ctx.font = Math.round(g.r * 1.9) + 'px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.shadowColor = 'rgba(255,215,80,0.8)';
-      ctx.shadowBlur = 14;
-      ctx.fillText(g.item, 0, 0);
+      const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, s * 0.8);
+      glow.addColorStop(0, 'rgba(255,225,120,0.45)');
+      glow.addColorStop(1, 'rgba(255,225,120,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(0, 0, s * 0.8, 0, Math.PI * 2); ctx.fill();
+      ctx.drawImage(emojiSprite(g.item), -s / 2, -s / 2, s, s);
       ctx.restore();
     }
 
