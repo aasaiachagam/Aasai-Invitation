@@ -1651,7 +1651,8 @@ function initGlimmer(root, canvas, props) {
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(root);
-    const gl = canvas.getContext("webgl2", { alpha: false, antialias: false, premultipliedAlpha: true, preserveDrawingBuffer: true });
+  // /ch3 oct 17 2026  trune to false preserveDrawingBuffer/ 
+    const gl = canvas.getContext("webgl2", { alpha: false, antialias: false, premultipliedAlpha: true, preserveDrawingBuffer: false });
     if (!gl) {
         console.warn("GlimmerVale: WebGL2 is not available");
         return () => ro.disconnect();
@@ -3139,16 +3140,15 @@ void main(){vec2 frag=gl_FragCoord.xy/max(uRes.y,1.0);float aspect=uRes.x/max(uR
     }
     function drawGem(g){
       const bob = Math.sin(runTime * 3 + g.phase) * 4;
-      const s = g.r * 2.5;
       ctx.save();
       ctx.globalAlpha = Math.max(0, 1 - g.fade);
       ctx.translate(g.x, g.y + bob);
-      const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, s * 0.8);
-      glow.addColorStop(0, 'rgba(255,225,120,0.45)');
-      glow.addColorStop(1, 'rgba(255,225,120,0)');
-      ctx.fillStyle = glow;
-      ctx.beginPath(); ctx.arc(0, 0, s * 0.8, 0, Math.PI * 2); ctx.fill();
-      ctx.drawImage(emojiSprite(g.item), -s / 2, -s / 2, s, s);
+      ctx.font = Math.round(g.r * 1.9) + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(255,215,80,0.8)';
+      ctx.shadowBlur = 14;
+      ctx.fillText(g.item, 0, 0);
       ctx.restore();
     }
 
