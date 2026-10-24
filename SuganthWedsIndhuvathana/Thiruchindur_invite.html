@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/png">
+  <title>Wedding Invitation</title>
+
+  <!-- Font Imports -->
+  
+  <!--OTher fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kavivanar&display=swap" rel="stylesheet"> <!--Tamil font -->
+  <link href="https://fonts.googleapis.com/css2?family=Amarante&display=swap" rel="stylesheet"><!--Engish font -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet"><!--ENG font -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet"><!--ENG font -->
+   <!-- new fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Edu+QLD+Hand:wght@400..700&family=Isometra&family=Capriola&display=swap" rel="stylesheet">
+
+  <!-- <script src="https://jsdelivr.net" defer></script> -->
+  <!--For add to calander -->
+  
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  overflow-x:hidden;
+  color:#5a3e0b;
+  min-height:100vh;
+  background: #000201;/* ch-17oct=01 linear-gradient(180deg,#E2A8AE 0%,#F8A68E 50%,#2E4410 50%,#2E4410 100%); /* fallback if WebGL is unavailable; the meadow canvas normally covers this */
+}
+#meadowCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#meadowHost{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;          /* fallback for old browsers */
+  height:100lvh;        /* ch-17oct=02 the fix: tallest screen height, so it never resizes while scrolling */
+  z-index:0;
+  display:block;
+  pointer-events:none;
+}
+.lang-en{font-family:"Dancing Script",cursive}
+.lang-ta{font-family:"Kavivanar",cursive}
+.lang-en h1{font-size:2.4rem}.lang-en h2{font-size:2rem}.lang-en h4{font-size:1.25rem}.lang-en p{font-size:1.15rem}
+.lang-ta h1{font-size:2.1rem}.lang-ta h2{font-size:1.8rem}.lang-ta h4{font-size:1.2rem}.lang-ta p{font-size:1.05rem}
+
+.top-controls{
+  position:fixed;top:18px;right:20px;z-index:100;
+  display:flex;align-items:center;gap:10px;
+}
+#langToggle,#calendarToggle{
+  padding:8px 15px;
+  color:#fff;background:#9b671b;border:1px solid rgba(255,255,255,.7);
+  border-radius:999px;cursor:pointer;font-family:"Amarante",serif;
+  box-shadow:0 5px 16px rgba(0,0,0,.18);font-size:1rem;line-height:1.2;
+}
+#calendarToggle{padding:8px 12px}
+
+/* Calendar modal */
+.calendar-modal{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(20,14,4,.55);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.calendar-modal[hidden]{display:none}
+.calendar-box{
+  position:relative;
+  width:min(360px,92vw);
+  background:#fffaf1;
+  border-radius:20px;
+  padding:22px 20px 24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+  font-family:"Amarante",serif;
+  color:#5d3a0a;
+  text-align:center;
+}
+.cal-close{
+  position:absolute;top:8px;right:12px;
+  background:none;border:none;font-size:1.2rem;cursor:pointer;color:#8a5812;
+}
+.cal-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+}
+.cal-header button{
+  background:#9b671b;color:#fff;border:none;border-radius:50%;
+  width:32px;height:32px;font-size:1.1rem;cursor:pointer;line-height:1;
+}
+#calMonthLabel{font-size:1.1rem;font-weight:700}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;
+}
+.cal-dow{font-size:.72rem;color:#9b671b;font-weight:700;padding:2px 0}
+.cal-day{
+  position:relative;padding:8px 0 6px;border-radius:8px;
+  font-size:.85rem;background:rgba(155,103,27,.08);
+}
+.cal-day.empty{background:transparent}
+.cal-day.heart{background:#ffe1e6;color:#b3002d;font-weight:700}
+.cal-day .heart-icon{display:block;font-size:.68rem;margin-top:1px}
+.cal-events{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.cal-add-btn{
+  background:#9b671b;color:#fff;border:none;border-radius:999px;
+  padding:9px 14px;font-family:"Amarante",serif;font-size:.85rem;cursor:pointer;
+}
+.cal-add-btn:hover{background:#7a4d0d}
+.temple-bg{
+  position:absolute;
+  left:0;bottom:0;
+  height:90%;
+  max-width:65%;
+  width:auto;
+  object-fit:contain;
+  z-index:1;
+  pointer-events:none;
+  opacity:.92;
+}
+
+#langWrapper{position:relative;z-index:2}
+.content{padding:0;max-width:none;margin:0}
+.invite-page,.event-page,.map-page,.thanks-page{
+  position:relative;
+  min-height:100vh;
+  width:100%;
+  padding:76px 20px 55px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.page-inner{
+  position:relative;
+  z-index:2;
+  width:min(900px,100%);
+  margin:auto;
+  text-align:center;
+  padding:36px 30px;
+  border:none;
+  border-radius:0;
+  background:transparent;
+}
+.invite-page{
+  display:block;
+}
+.invite-page .temple-bg{
+  position:absolute;
+  left:0;
+  bottom:0;
+  top:auto;right:auto;
+  height:68vh;
+  max-height:72vh;
+  width:auto;
+  max-width:50%;
+  object-fit:contain;
+  z-index:1;
+  pointer-events:none;
+  opacity:.92;
+}
+.invite-page .page-inner{
+  position:relative;
+  z-index:2;
+  margin:0 0 0 36%;
+  width:min(420px,42%);
+  min-height:auto;
+  display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
+  padding:36px 24px;
+}
+#title{margin:0 auto 28px;line-height:1.2;color:#8a5812;font-weight:700}
+#groom,#bride{margin:8px 0;color:#5d3a0a;font-weight:700}
+#wed{margin:4px 0;color:#9b671b;font-weight:700}
+#message{max-width:680px;margin:22px auto 0;line-height:1.55;font-weight:600}
+
+.event-page .page-inner,.map-page .page-inner,.thanks-page .page-inner{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.event-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 18px 18px 10px;
+      font-family: "Amarante", serif;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      text-align: center;
+    }
+.event-header .event-title{
+  display:block;font-size:2rem;font-weight:700;color:#7a4d0d;line-height:1.15;
+  width:100%;text-align:center;
+}
+/* ///////////////////////////////// */
+.event-media {
+  width: min(280px, 78%);
+  display: flex;
+  justify-content: center;
+  
+  /* Apply the drop-shadow here so it molds perfectly to the video's irregular edges */
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.16));
+}
+
+.event-media video,
+.event-media img {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  max-height: 280px;
+  object-fit: cover;
+
+  /* Creates a highly uneven, asymmetric amorphous blob */
+  border-radius: 30% 70% 40% 60% / 60% 40% 70% 30%;
+  
+  /* Adds a matching solid border if you still want a distinct outline */
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+/* event media ends ////////////////////////// */
+
+/* adding new code for glass */
+/* 1. Base Event Container acting as the boundary wrapper */
+.event-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px; /* Your rounded corners */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.2); 
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+}
+
+/* 2. Liquid Glass Layer Elements */
+.liquidGlass-effect {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  backdrop-filter: blur(3px);
+  filter: url(#glass-distortion); /* Targets the SVG filter written above */
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.liquidGlass-tint {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.25); /* Tint adjustments */
+}
+
+.liquidGlass-shine {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  /* Adds the internal specular/reflective rim borders */
+  box-shadow: inset 2px 2px 1px 0 rgba(180, 171, 171, 0.5),
+              inset -1px -1px 1px 1px rgba(221, 195, 195, 0.5);
+}
+
+/* 3. The Content & Font Styles (Combines your styling setup) */
+.liquidGlass-text {
+  position: relative;
+  z-index: 3; /* Ensures readability over the background distortion */
+  width: 100%;
+}
+
+.event-content { 
+  width: 100%;
+  padding: 24px 10px 8px; 
+  font-family: "Caveat Brush", cursive;
+  font-size: 1.45rem;
+  line-height: 1.45;
+  text-align: center;
+  color: #b80e0e; /* Dark text reads better against bright macOS-style glass tints */
+}
+
+/* new code for glass ends  */
+
+/* .event-content{
+  width:100%;padding:24px 10px 8px;
+  font-family:"Caveat Brush",cursive;font-size:1.45rem;line-height:1.45;text-align:center
+} */
+.event-card{width:100%}
+
+.map-page .page-inner{gap:18px}
+.map-title{font-family:"Amarante",serif;font-size:2rem;color:#7a4d0d;margin:0}
+.map-gif{width:min(240px,80%);max-height:220px;object-fit:contain;border-radius:18px}
+.qr-image{width:170px;max-width:70%;border:5px solid #fff;border-radius:16px;box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.map-link{
+  display:inline-block;margin:0;color:#8d5700;font-weight:bold;text-decoration:none;
+  font-family:"Amarante",serif;font-size:1.05rem;padding:10px 18px;
+  border-radius:999px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8)
+}
+.rounded-iframe{width:min(500px,100%);height:230px;border:none;border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,.14)}
+.thanks-page .page-inner{min-height:65vh}
+.thanks-title{font-family:"Amarante",serif;font-size:2.3rem;color:#7a4d0d;margin:0 0 25px}
+.thanks-text{font-size:1.35rem;line-height:1.6;max-width:700px;margin:0 auto}
+footer{
+  font-family:Arial,sans-serif;background:rgba(255,255,255,.72);padding:18px;
+  text-align:center;font-size:14px;color:#333;border-top:1px solid rgba(120,80,20,.2);
+  position:relative;z-index:10
+}
+footer a{color:#7b500b;text-decoration:none}footer a:hover{text-decoration:underline}
+@media(max-width:600px){
+  #langToggle{top:12px;right:12px}
+  .invite-page,.event-page,.map-page,.thanks-page{padding:65px 12px 35px}
+  .page-inner{padding:25px 15px;border-radius:22px}
+  #title{font-size:2rem}.lang-en h2{font-size:1.8rem}
+  .invite-page .temple-bg{height:60vh;max-width:52%}
+  .invite-page .page-inner{margin-left:50%;width:min(260px,48%)}
+  .event-header{padding:20px 12px}.event-header .event-title{font-size:1.65rem}
+  .event-content{font-size:1.25rem}
+  .rounded-iframe{height:180px}
+}
+
+/* new style for H1 tages  */
+/* .couple-names{
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  text-align: center;
+} */
+
+ .couple-names{
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;          /* above temple-bg (z-index:1) and page-inner (z-index:2) */
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+.couple-names *{ pointer-events: auto; }
+
+.thanks-text{
+  font-size:1.35rem;
+  line-height:1.6;
+  max-width:700px;
+  margin:0 auto;
+  white-space: pre-line;   /* add this line */
+}
+
+
+/* light text for the twilight Glimmer Vale scene */
+body{color:#f6eefc}
+#title,.event-title,.map-title,.thanks-title{color:#fff2e0 !important}
+#groom,#bride{color:#ffffff !important}
+#wed{color:#ffd9a0 !important}
+#title,#groom,#bride,#wed,.event-title,.map-title,.thanks-title{
+  text-shadow:0 2px 6px rgba(18,10,48,.85),0 0 18px rgba(18,10,48,.7);
+}
+.event-content{color:#ffe7c4 !important;text-shadow:0 2px 8px rgba(18,10,48,.8)}
+.thanks-text{color:#fff2e0;text-shadow:0 2px 8px rgba(18,10,48,.8)}
+.liquidGlass-tint{background:rgba(40,28,80,.35) !important}
+.map-link{color:#ffe7c4 !important;background:rgba(40,28,80,.55) !important;border:1px solid rgba(255,255,255,.35) !important;text-shadow:none}
+
+/* temple stands in the meadow at the horizon and stays put while scrolling */
+.temple-fixed{position:fixed;right:0;bottom:0;transform:translateY(0);height:40vh;width:auto;max-width:62vw;object-fit:contain;object-position:right bottom;z-index:1;pointer-events:none}
+.couple-names{top:11vh !important;transform:translate(-50%,0) !important}
+@media(max-width:600px){.temple-fixed{height:34vh;max-width:70vw}.couple-names{top:9vh !important}}
+
+/* adding css for gilmmer valy  */
+/* Full-screen WebGL background */
+#meadowHost {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#meadowCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Mobile portrait */
+@media (max-width: 600px) {
+  #meadowHost,
+  #meadowCanvas {
+    width: 100%;
+  }
+
+  #meadowHost {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  #meadowCanvas {
+    height: 100%;
+  }
+}
+/* gillmeer valy background ends */
+</style>
+
+<!-- Loader Starts  -->
+<style>
+  /* Fullscreen Loader Overlay */
+  #countdown-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000; /* Solid black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #ffffff;
+  }
+
+  /* Container styling */
+  .timer-container {
+    text-align: center;
+  }
+
+  /* Optional header text */
+  .timer-title {
+    font-size: 0.9rem;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    color: #888888;
+  }
+
+  /* Flex row for timer segments */
+  .countdown-display {
+    display: flex;
+    gap: 25px;
+  }
+
+  /* Individual time segments */
+  .time-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+  }
+
+  /* Large neon numeric readout */
+  .time-box span {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: ##ffffff; /* Matches your previous neon color */
+    filter: drop-shadow(0 0 8px #ff2a74) drop-shadow(0 0 20px #ff2a74);
+  }
+
+  /* Small labels below the numbers */
+  .time-box label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    color: #aaaaaa;
+  }
+
+  /* Class to hide the loader smoothly when done */
+  .loader-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+</style>
+<!-- Loder ends  -->
+
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Great+Vibes&family=Tiro+Tamil&display=swap" rel="stylesheet">
+<style id="elite">
+:root{--g1:#fff0c2;--g2:#e0b155;--g3:#b98424;--gold:#d9a94a;--cream:#f7e4b8}
+body{background:radial-gradient(circle at 50% 30%,#4a1010,#140404 75%)!important;color:var(--cream)!important}
+.bg-vid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
+.bg-scrim{position:fixed;inset:0;z-index:0;pointer-events:none;background:rgba(18,4,4,.35)}
+.lang-en,.lang-en .event-content,.lang-en p{font-family:"Cormorant Garamond",serif}
+.lang-ta,.lang-ta .event-content,.lang-ta p{font-family:"Tiro Tamil",serif}
+#groom,#bride,.event-title,.map-title,.thanks-title{background:linear-gradient(180deg,var(--g1),var(--g2) 55%,var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));font-family:Cinzel,serif!important;letter-spacing:.06em}
+.lang-ta #groom,.lang-ta #bride,.lang-ta .event-title,.lang-ta .map-title,.lang-ta .thanks-title{font-family:"Tiro Tamil",serif!important;letter-spacing:0}
+.event-title::after,.map-title::after,.thanks-title::after{content:"\2500\2500  \2756  \2500\2500";display:block;font-size:.8rem;color:var(--gold);-webkit-text-fill-color:var(--gold);margin-top:8px}
+.event-content,.thanks-text{color:var(--cream)!important;font-family:inherit!important;font-weight:600;font-size:1.35rem;text-shadow:0 2px 8px rgba(0,0,0,.7)!important}
+.map-link{color:var(--gold)!important;background:none!important;border:0!important;border-radius:0!important;text-decoration:underline;text-underline-offset:6px;letter-spacing:.06em;font-family:inherit!important}
+.rounded-iframe{border:1px solid var(--gold);border-radius:3px;box-shadow:0 0 0 4px rgba(20,4,4,.6),0 0 0 5px rgba(217,169,74,.6)}
+footer{background:rgba(22,5,5,.9)!important;color:var(--cream)!important;font-family:"Cormorant Garamond",serif!important;font-size:1rem!important;border-top:1px solid var(--gold)!important}
+footer a{color:var(--gold)!important}
+/* top bar = elite text */
+.top-controls{left:0!important;right:0!important;top:0!important;justify-content:center;gap:0;padding:max(16px,env(safe-area-inset-top)) 12px 14px;background:linear-gradient(rgba(14,3,3,.6),transparent)}
+.top-controls>*{padding:2px clamp(10px,3.4vw,18px)!important;border:0!important;border-left:1px solid rgba(217,169,74,.55)!important;border-radius:0!important;background:none!important;box-shadow:none!important;color:var(--cream)!important;font:500 clamp(.85rem,3.7vw,1.05rem)/1.3 "Cormorant Garamond","Tiro Tamil",serif!important;letter-spacing:.08em;text-shadow:0 1px 6px rgba(0,0,0,.7);cursor:pointer;text-decoration:none!important;white-space:nowrap}
+.top-controls>:first-child{border-left:0!important}
+#playGameBtn{background:none!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:0!important;color:#f3c96a!important;font:inherit!important;font-weight:700!important;text-shadow:inherit}
+/* landing */
+.invite-page{padding:0!important;min-height:100vh;min-height:100svh;display:block!important;z-index:3;background:linear-gradient(180deg,#1b4a8a 0%,#4a86c0 30%,#eeb064 66%,#f6c981 78%,#2a0e06 100%)}
+.hero-sun{position:absolute;left:-45vw;top:34%;width:90vw;height:90vw;background:radial-gradient(circle,#fff7cf 0,#ffd98a 4%,rgba(255,176,70,.45) 16%,transparent 52%);animation:sunp 6s ease-in-out infinite alternate}
+@keyframes sunp{from{opacity:.75;transform:scale(.94)}to{opacity:1;transform:scale(1.06)}}
+.hero-clouds i{position:absolute;left:-30vw;width:70vw;height:16vh;border-radius:50%;background:radial-gradient(ellipse,rgba(255,226,170,.6),transparent 70%);animation:drift 38s linear infinite alternate}
+.hero-clouds i:nth-child(1){top:12%}.hero-clouds i:nth-child(2){top:26%;animation-duration:52s;opacity:.7}.hero-clouds i:nth-child(3){top:40%;animation-duration:46s;animation-delay:-20s;opacity:.5}
+@keyframes drift{to{transform:translateX(70vw)}}
+.hero-temple{position:absolute;left:50%;bottom:27%;height:62%;max-width:92%;object-fit:contain;transform:translateX(-50%);transform-origin:50% 100%;animation:kb 20s ease-in-out infinite alternate}
+@keyframes kb{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.05)}}
+.hero-lamp{position:absolute;bottom:5%;width:64px;height:64px;border-radius:50%;z-index:4;background:radial-gradient(circle,rgba(255,206,100,.95),rgba(255,150,40,.3) 45%,transparent 70%);animation:flick 2.4s ease-in-out infinite alternate}
+.hero-lamp.l{left:5%}.hero-lamp.r{right:5%;animation-delay:-1.1s}
+@keyframes flick{from{opacity:.6;transform:scale(.9)}to{opacity:1;transform:scale(1.1)}}
+.couple-names{position:absolute!important;left:0!important;right:0;bottom:0;top:auto!important;width:100%;transform:none!important;padding:90px 22px 56px;pointer-events:auto;z-index:3;background:linear-gradient(180deg,transparent,rgba(48,14,6,.9) 24%,#280a04)}
+.couple-names::before{content:"";position:absolute;left:8%;right:8%;top:88px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+#title{font:italic 500 1.05rem/1.4 "Cormorant Garamond",serif!important;color:var(--cream)!important;text-shadow:none!important;max-width:440px;margin:14px auto 8px!important}
+.lang-ta #title{font:.9rem/1.6 "Tiro Tamil",serif!important}
+#groom,#bride{font-size:clamp(1.9rem,8.4vw,3rem)!important;margin:.1em 0!important;line-height:1.15}
+#wed{display:flex;align-items:center;justify-content:center;gap:14px;font:400 2.3rem/1.1 "Great Vibes",cursive!important;color:#f0cf85!important;text-shadow:none!important;margin:2px 0!important}
+#wed::before,#wed::after{content:"";height:1px;width:22%;background:linear-gradient(90deg,transparent,var(--gold))}
+#wed::after{transform:scaleX(-1)}
+/* traditional arch frame */
+.event-media{position:relative;width:min(250px,70%)!important;padding:7px;margin:16px 0 6px;background:linear-gradient(145deg,#f6d98b,#a9741f 50%,#f2d27a);border-radius:999px 999px 8px 8px/150px 150px 8px 8px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.45))!important}
+.event-media::before{content:"";position:absolute;inset:-7px;border:1px solid rgba(240,200,110,.75);border-radius:inherit;pointer-events:none}
+.event-media::after{content:"";position:absolute;left:50%;top:-15px;width:9px;height:9px;background:var(--gold);transform:translateX(-50%) rotate(45deg)}
+.event-media video,.event-media img{display:block;width:100%!important;max-width:none!important;max-height:none!important;aspect-ratio:4/5;object-fit:cover!important;border-radius:999px 999px 3px 3px/143px 143px 3px 3px!important;border:2px solid #4a1010!important}
+/* calendar */
+.calendar-box{background:#2b0b0b!important;border:1px solid var(--gold);outline:1px solid rgba(217,169,74,.4);outline-offset:-7px;border-radius:4px!important;color:var(--cream)!important;font-family:"Cormorant Garamond",serif!important}
+.cal-close,.cal-header button,.cal-add-btn{background:none!important;color:var(--gold)!important;border:0!important;border-radius:0!important;width:auto!important;height:auto!important;font-family:inherit!important;letter-spacing:.06em;font-size:1.05rem!important}
+.cal-add-btn{text-decoration:underline;text-underline-offset:5px;padding:6px!important}
+.cal-day{background:rgba(217,169,74,.07)!important;border-radius:2px!important}.cal-day.heart{background:rgba(217,169,74,.28)!important;color:#ffe9b0!important}.cal-dow{color:var(--gold)!important}
+/* loader */
+#countdown-loader-overlay{background:#1a0505!important}.time-box span{color:#f3d58a!important;filter:none!important;font-family:Cinzel,serif}.timer-title{font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--gold)!important}
+/* scroll reveal (in + out) */
+.js [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s ease;transition-delay:var(--d,0s)}
+.js [data-reveal].in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}.js [data-reveal]{transition:none;opacity:1;transform:none}}
+/* game: Chrome-Dino look, flat + light */
+#wgOverlay{background:#f7f7f7!important;color:#535353}
+#wgOverlay *{font-family:"Courier New",monospace}
+#wgHUD .wg-pill,#wgCloseBtn,#wgEndBtn{background:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#535353!important;border:0!important;font-weight:700;letter-spacing:.05em}
+#wgTapHint,#wgJourney{color:#535353!important;text-shadow:none!important}
+#wgIntro,#wgDead,#wgBoard{background:rgba(247,247,247,.92)!important}
+.wg-card,.wg-board-card{background:#f7f7f7!important;color:#535353!important;border:3px solid #535353!important;border-radius:0!important;box-shadow:none!important;animation:none!important}
+.wg-card h3,.wg-board-card h3,.wg-story h3{color:#535353!important;text-transform:uppercase}
+.wg-card p,.wg-board-card p,.wg-story p{color:#535353}
+.wg-cta,.wg-cta.secondary,.wg-story .wg-cta,.wg-story .wg-cta.secondary{background:none!important;color:#535353!important;border:0!important;border-radius:0!important;font-weight:700;text-decoration:underline;text-underline-offset:4px;padding:10px 12px!important;margin:0!important}
+.wg-story-inner{background:#f7f7f7!important;border:3px solid #535353;border-radius:0!important;filter:none!important;color:#535353!important}
+.wg-story-inner::before,.wg-story-inner::after,.wg-cardicon,.wg-boardicon{display:none!important}
+.wg-story.ta h3,.wg-story.ta p{font-family:"Tiro Tamil",serif!important}
+</style>
+</head>
+<body>
+  <!-- for loader  -->
+<!-- Countdown Loader Overlay Starts -->
+			<div id="countdown-loader-overlay">
+			  <div class="timer-container">
+				<div class="countdown-display">
+				  <div class="time-box"><span id="days">00</span><label>Days</label></div>
+				  <div class="time-box"><span id="hours">00</span><label>Hours</label></div>
+				  <div class="time-box"><span id="minutes">00</span><label>Mins</label></div>
+				  <div class="time-box"><span id="seconds">00</span><label>Secs</label></div>
+				</div>
+				<div class="timer-title">Yet there for our wedding</div>
+			  </div>
+			</div>
+  <!-- loader ends  -->
+    <video class="bg-vid" id="bgVid" src="assets/BackVidPlay.mp4" autoplay loop muted playsinline preload="auto"></video><div class="bg-scrim"></div>
+  <!-- Glimmer Vale background (twilight hills of twinkling light, daisies and grass), ported to plain JS / WebGL2. -->
+  
+
+  <div class="top-controls">
+    <a id="quickmap" href="https://share.google/r4kkPk3fcFx69xJSY" class="map-link" target="_blank">Location</a>
+    <button id="calendarToggle" title="View wedding dates" aria-label="Open calendar">Date</button>
+    <button id="langToggle">தமிழ்</button>
+    <div class="game"></div>
+  </div>
+
+  <div id="calendarModal" class="calendar-modal" hidden>
+    <div class="calendar-box">
+      <button id="calClose" class="cal-close" aria-label="Close calendar">✕</button>
+      <div class="cal-header">
+        <button id="calPrev" aria-label="Previous month">‹</button>
+        <span id="calMonthLabel"></span>
+        <button id="calNext" aria-label="Next month">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-events">
+        <button class="cal-add-btn" id="addReception">Add Reception to Google Calendar</button>
+        <button class="cal-add-btn" id="addWedding">Add Wedding to Google Calendar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="langWrapper" class="lang-en">
+    <div class="content">
+
+      <!-- PAGE 1: INVITATION -->
+      <section class="invite-page" id="page-invite">
+        <div class="hero-sun"></div>
+        <div class="hero-clouds"><i></i><i></i><i></i></div>
+        <img class="hero-temple" src="assets/TempleThiruKovil.jpg" alt="Temple">
+        <div class="hero-lamp l"></div><div class="hero-lamp r"></div>
+        <div class="couple-names">
+          <h4 id="title">You're Invited!</h4>
+          <h2 id="groom">Mapu</h2>
+          <h4 id="wed">Weds</h4>
+          <h2 id="bride">Ponnu</h2>
+          <svg width="46" height="26" viewBox="0 0 46 26" fill="#d9a94a" style="margin-top:6px"><path d="M23 2c3 5 3 11 0 16-3-5-3-11 0-16zM23 18C16 17 9 13 6 7c6 0 12 3 17 11zM23 18c7-1 14-5 17-11-6 0-12 3-17 11zM2 20h42v2H2z"/></svg>
+        </div>
+      </section>
+
+      <!-- PAGE 2: RECEPTION -->
+      <section class="event-page" id="page-reception">
+	  <div class="event-container">
+                        <!-- Liquid Glass Layers -->
+                        <div class="liquidGlass-effect"></div>
+                        <div class="liquidGlass-tint"></div>
+                        <div class="liquidGlass-shine"></div>
+                        
+                        <!-- Your Event Content Goes inside the Text Layer -->
+                        <div class="liquidGlass-text">
+						
+		
+        <div class="page-inner event-card">
+          <div class="event-header">
+            <span class="event-title" id="e_reception_title">Reception</span>
+            <div class="event-media">
+              <video src="assets/reception.mp4" autoplay loop muted playsinline>
+                <img src="assets/reception.png" alt="Reception"/>
+              </video>
+            </div>
+            <!-- <div class="event-content" id="e_reception_content"></div> -->
+            <!-- The Container for liquid glass -->
+                      
+                          <div class="event-content" id="e_reception_content">
+                            Welcome
+                          </div>
+                        
+          </div>
+        </div>
+
+						</div>
+                      </div>
+					  		</section>
+
+
+      <!-- PAGE 3: WEDDING CEREMONY -->
+	  <section class="event-page" id="page-wedding">
+      
+            <!-- <div class="event-content" id="e_wedding_content"></div> -->
+            <!-- The Container for liquid glass -->
+                      <div class="event-container">
+                        <!-- Liquid Glass Layers -->
+                        <div class="liquidGlass-effect"></div>
+                        <div class="liquidGlass-tint"></div>
+                        <div class="liquidGlass-shine"></div>
+                        
+                        <!-- Your Event Content Goes inside the Text Layer -->
+                        <div class="liquidGlass-text">
+						
+						<div class="page-inner event-card">
+						  <div class="event-header">
+							<span class="event-title" id="e_wedding_title">Wedding Ceremony</span>
+							<div class="event-media">
+							  <video src="assets/wedding.mp4" autoplay loop muted playsinline>
+								<img src="assets/wedding.png" alt="Wedding Ceremony"/>
+							  </video>
+							</div>
+							  <div class="event-content" id="e_wedding_content">
+								Welcome
+							  </div>
+							</div>
+							</div>
+						  
+                        </div>
+                      </div>
+         </section>
+
+      <!-- PAGE 4: MAP -->
+      <section class="map-page" id="page-map">
+	   <!-- The Container for liquid glass -->
+                      <div class="event-container">
+                        <!-- Liquid Glass Layers -->
+                        <div class="liquidGlass-effect"></div>
+                        <div class="liquidGlass-tint"></div>
+                        <div class="liquidGlass-shine"></div>
+                        
+                        <!-- Your Event Content Goes inside the Text Layer -->
+                        <div class="liquidGlass-text">
+        <div class="page-inner">
+          <h2 class="map-title">Come Let's Celebrate together</h2>
+          <div class="event-media">
+          <img class="map-gif" src="assets/Carloc.gif" alt="Venue"/>
+          </div>
+          <!-- <img class="qr-image" src="assets/qr.png" alt="Location QR"/> -->
+          <a href="https://share.google/r4kkPk3fcFx69xJSY" class="map-link" target="_blank">
+            Click to drive towards location...
+          </a>
+          <iframe class="rounded-iframe"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3913.00809059727!2d77.57775257406205!3d11.260814688918893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba973003f1f2d65%3A0x9b1a308dd450d712!2sMayoora%20Mahal!5e0!3m2!1sen!2sin!4v1789542728234!5m2!1sen!2sin"
+            allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
+          <p>Some Issue in loading intractive Map, Please click on above link</p>
+          </iframe>
+        </div>
+							</div>
+                      </div>
+          <!-- Contiver ends -->
+      </section>
+
+      <!-- PAGE 5: WARM INVITE / THANKS -->
+      <section class="thanks-page" id="page-thanks">
+	  <!-- The Container for liquid glass -->
+                      <div class="event-container">
+                        <!-- Liquid Glass Layers -->
+                        <div class="liquidGlass-effect"></div>
+                        <div class="liquidGlass-tint"></div>
+                        <div class="liquidGlass-shine"></div>
+                        
+                        <!-- Your Event Content Goes inside the Text Layer -->
+                        <div class="liquidGlass-text">
+        <div class="page-inner">
+          <h2 class="thanks-title">With Love &amp; Warm Regards</h2>
+                          <div class="event-content">
+                            <p class="thanks-text" id="thanksMessage"></p>
+                            <p class="thanks-text">Thank you for being a part of our special day.</p>
+                          </div>
+                        
+        </div>
+					</div>
+                      </div>
+          <!-- Contiver ends -->
+      </section>
+
+    </div>
+  </div>
+
+  <footer>
+    Crafted with careby <strong>Aasai Achagam</strong> |
+    <a href="https://g.co/kgs/Q9JfMxS" target="_blank">Location</a> |
+    Call or Whatsapp us at <a href="tel:9843319470">98433 19470 </a>
+  </footer>
+
+  <!-- add below svg for glass box  -->
+  <!-- REQUIRED: The SVG Filter for the Liquid Distortion (Keep hidden) -->
+    <svg style="display: none">
+      <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+        <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+        <feComponentTransfer in="turbulence" result="mapped">
+          <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+          <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+          <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+        </feComponentTransfer>
+        <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+        <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+          <fePointLight x="-200" y="-200" z="300" />
+        </feSpecularLighting>
+        <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+        <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+
+  <script>
+    const langContent = {
+      en: {
+        title: "With love and blessings, you are warmly invited to the wedding of...",
+        message: "Two families collide, but don’t you look away,\nWe signed the peace treaty just the other day!\nCome bless the sweet union, witness the grand vow,\nBut let's be honest, you’re just here for the chow!\n...!",
+        groom: "S. Suganth",
+        bride: "B. Indhuvathana",
+        events: {
+          reception: {
+            title: "Reception",
+            content: "On Saturday 12th December 2026 between 6.00 Pm & 9.00 Pm @ Mayura Mahal"
+          },
+          wedding: {
+            title: "Muhurtham",
+            content: "On Sunday 13th December 2026 between 4.00 Am & 5.00 Am @ Mayura Mahal"
+          }
+        }
+      },
+      ta: {
+        title: "இன்பகரமான இந்த நொடியில், எங்கள் திருமண விழாவிற்கு உங்களை அன்புடன் அழைக்கிறோம்.",
+        message: "இரு குடும்பம் இணையுது, சண்டை ஒன்னும் இல்ல,\nசமாதான ஒப்பந்தம் கையெழுத்தாச்சு மெல்ல!\nபுது ஜோடிய வாழ்த்தி நல்லா சிரிச்சிட்டு போங்க,\nமுக்கியமா அந்த கல்யாண சாப்பாட சாப்டுட்டு போங்க!\n...!",
+        groom: "S.சுகந்த்",
+        bride: "B.இந்துவதனா",
+        events: {
+          wedding: {
+            title: "முஹூர்த்தம்",
+            content: "2026 டிசம்பர் 13, ஞாயிற்றுக்கிழமை அன்று அதிகாலை 4.00 மணி முதல் 5.00 மணி வரை, மயூரா மஹாலில்."
+          },
+          reception: {
+            title: "வரவேற்பு",
+            content: "2026 டிசம்பர் 12, சனிக்கிழமை அன்று மாலை 6.00 மணி முதல் இரவு 9.00 மணி வரை, மயூரா மஹாலில்."
+          }
+        }
+      }
+    };
+
+    let currentLang = 'en';
+
+    document.getElementById('langToggle').onclick = () => {
+      currentLang = currentLang === 'en' ? 'ta' : 'en';
+      updateLang();
+    };
+
+    function updateLang() {
+      const data = langContent[currentLang];
+      const wrapper = document.getElementById("langWrapper");
+
+      wrapper.classList.remove('lang-en', 'lang-ta');
+      wrapper.classList.add(currentLang === 'en' ? 'lang-en' : 'lang-ta');
+
+      document.getElementById("title").textContent = data.title;
+      // document.getElementById("message").textContent = data.message;
+      document.getElementById("thanksMessage").textContent = data.message;
+      document.getElementById("bride").textContent = data.bride;
+      document.getElementById("groom").textContent = data.groom;
+      for (let k in data.events) {
+        document.getElementById(`e_${k}_title`).textContent = data.events[k].title;
+        document.getElementById(`e_${k}_content`).textContent = data.events[k].content;
+      }
+
+      document.getElementById('langToggle').textContent = currentLang === 'en' ? 'தமிழ்' : 'English';
+    }
+
+    updateLang();
+  </script>
+
+  <!-- Calendar modal: Dec 2026, 12th & 13th highlighted, Add to Google Calendar -->
+  <script>
+  (function(){
+    const modal = document.getElementById('calendarModal');
+    const toggleBtn = document.getElementById('calendarToggle');
+    const closeBtn = document.getElementById('calClose');
+    const prevBtn = document.getElementById('calPrev');
+    const nextBtn = document.getElementById('calNext');
+    const monthLabel = document.getElementById('calMonthLabel');
+    const grid = document.getElementById('calGrid');
+
+    let viewYear = 2026, viewMonth = 11; // December 2026 (0-indexed)
+
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const dow = ["S","M","T","W","T","F","S"];
+
+    function renderCalendar(){
+      grid.innerHTML = "";
+      dow.forEach(function(d){
+        const el = document.createElement('div');
+        el.className = 'cal-dow';
+        el.textContent = d;
+        grid.appendChild(el);
+      });
+      monthLabel.textContent = monthNames[viewMonth] + " " + viewYear;
+
+      const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++){
+        const el = document.createElement('div');
+        el.className = 'cal-day empty';
+        grid.appendChild(el);
+      }
+      for (let day = 1; day <= daysInMonth; day++){
+        const el = document.createElement('div');
+        const isHeartDay = (viewYear === 2026 && viewMonth === 11 && (day === 12 || day === 13));
+        el.className = 'cal-day' + (isHeartDay ? ' heart' : '');
+        el.innerHTML = isHeartDay ? (day + '<span class="heart-icon">❖</span>') : String(day);
+        grid.appendChild(el);
+      }
+    }
+
+    toggleBtn.addEventListener('click', function(){
+      modal.hidden = false;
+      renderCalendar();
+    });
+    closeBtn.addEventListener('click', function(){ modal.hidden = true; });
+    modal.addEventListener('click', function(e){ if (e.target === modal) modal.hidden = true; });
+    prevBtn.addEventListener('click', function(){
+      viewMonth--; if (viewMonth < 0){ viewMonth = 11; viewYear--; }
+      renderCalendar();
+    });
+    nextBtn.addEventListener('click', function(){
+      viewMonth++; if (viewMonth > 11){ viewMonth = 0; viewYear++; }
+      renderCalendar();
+    });
+
+    function buildGCalLink(title, startUTC, endUTC, details, location){
+      const base = 'https://www.google.com/calendar/render?action=TEMPLATE';
+      const params = new URLSearchParams({
+        text: title,
+        dates: startUTC + '/' + endUTC,
+        details: details,
+        location: location
+      });
+      return base + '&' + params.toString();
+    }
+
+    // Reception: Sat 12 Dec 2026, 6:00 PM - 9:00 PM IST  -> 12:30-15:30 UTC
+    document.getElementById('addReception').addEventListener('click', function(){
+      const link = buildGCalLink(
+        'Reception - Suganth Weds Indhuvathana',
+        '20261212T123000Z',
+        '20261212T153000Z',
+        'Reception celebration at Mayoora Mahal',
+        'Mayoora Mahal'
+      );
+      window.open(link, '_blank');
+    });
+
+    // Wedding Muhurtham: Sun 13 Dec 2026, 4:00 AM - 5:00 AM IST -> 22:30-23:30 UTC on 12 Dec
+    document.getElementById('addWedding').addEventListener('click', function(){
+      const link = buildGCalLink(
+        'Wedding Muhurtham - Suganth and Indhuvathana Muhurtham',
+        '20261212T223000Z',
+        '20261212T233000Z',
+        'Wedding ceremony at Mayoora Mahal',
+        'Mayoora Mahal'
+      );
+      window.open(link, '_blank');
+    });
+  })();
+  </script>
+
+
+  <!-- ============================================================
+       PARROT THROUGH THE CLOUDS — tap to flap, collect wedding treats, unlock the details
+       Cloud-sky WebGL background + canvas game. Single file.
+       ============================================================ -->
+  <style>
+  #wgOverlay{position:fixed;inset:0;z-index:1000;background:#0a1a3a;display:none;touch-action:none;overflow:hidden;font-family:Arial,Helvetica,sans-serif;-webkit-user-select:none;user-select:none}
+  #wgOverlay.wg-open{display:block}
+  #wgCloudCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+  #wgCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}
+  #playGameBtn{
+    padding:10px 18px;color:#fff;background:linear-gradient(135deg,rgba(255,255,255,.28),rgba(255,255,255,.1));
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.45);border-radius:14px;cursor:pointer;
+    font-family:"Amarante",serif;font-size:1rem;font-weight:600;
+    box-shadow:0 4px 24px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.35);
+    text-shadow:0 1px 4px rgba(0,0,0,.35);
+    transition:transform .2s ease;
+  }
+  #playGameBtn:active{transform:scale(.97)}
+  #wgHUD{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;z-index:5;pointer-events:none}
+  #wgHUD>*{pointer-events:auto}
+  .wg-pill{background:rgba(15,10,40,.6);backdrop-filter:blur(8px);color:#fff;padding:7px 13px;border-radius:999px;font-size:.82rem;font-weight:600;border:1px solid rgba(255,255,255,.28);white-space:nowrap}
+  #wgCloseBtn{background:rgba(15,10,40,.6);border:1px solid rgba(255,255,255,.28);color:#fff;width:36px;height:36px;min-width:36px;border-radius:50%;cursor:pointer;font-size:1rem}
+  #wgHudCenter{display:flex;gap:8px;flex:1;justify-content:center;flex-wrap:wrap}
+
+  /* tap hint + endless intro words + end button */
+  #wgTapHint{white-space:pre-line;padding:0 16px;position:absolute;left:0;right:0;top:62%;z-index:6;text-align:center;color:#fff;font-family:"Amarante",serif;font-size:1.15rem;text-shadow:0 2px 10px rgba(0,30,90,.7);pointer-events:none;white-space:pre-line;padding:0 16px;opacity:0;transition:opacity .3s}
+  #wgTapHint.wg-show{opacity:1;animation:wgPulse 1.1s ease-in-out infinite}
+  @keyframes wgPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+  #wgJourney{position:absolute;left:0;right:0;top:38%;z-index:6;text-align:center;padding:0 20px;color:#fff;font-family:"Dancing Script","Kavivanar",cursive;font-weight:700;font-size:clamp(2rem,8vw,3.6rem);text-shadow:0 3px 18px rgba(0,40,110,.8),0 0 30px rgba(255,255,255,.5);pointer-events:none;opacity:0}
+  #wgJourney.wg-play{animation:wgJourneyFade 5.5s ease-in forwards}
+  @keyframes wgJourneyFade{0%{opacity:0;transform:translateY(10px)}12%{opacity:1;transform:none}45%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+  #wgEndBtn{display:none;position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:7;background:rgba(15,10,40,.62);backdrop-filter:blur(6px);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:600;cursor:pointer}
+  #wgEndBtn.wg-show{display:block}
+
+  #wgIntro,#wgDead,#wgBoard{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(5,8,25,.78);padding:20px;text-align:center}
+  #wgIntro.wg-show,#wgDead.wg-show,#wgBoard.wg-show{display:flex}
+  .wg-card{max-width:420px;background:rgba(20,18,45,.92);border:1px solid rgba(255,255,255,.22);border-radius:22px;padding:28px 24px;color:#fff;box-shadow:0 20px 50px rgba(0,0,0,.55)}
+  .wg-card h3{margin:6px 0 10px;font-size:1.45rem;font-family:"Amarante",serif}
+  .wg-card p{margin:0 0 16px;line-height:1.55;opacity:.93;font-size:.96rem}
+  .wg-cardicon{font-size:2.5rem;margin-bottom:4px}
+  .wg-cta{display:inline-block;background:#ffd166;color:#3a2200;font-weight:700;border:none;border-radius:999px;padding:12px 24px;cursor:pointer;font-size:1rem;text-decoration:none}
+  .wg-cta.secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);margin-left:8px}
+  .wg-hint{font-size:.74rem;opacity:.75;margin-top:14px;line-height:1.5}
+
+  .wg-board-card{max-width:440px;width:100%;border-radius:24px;padding:32px 26px;text-align:center;color:#fff;box-shadow:0 24px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.25);animation:wgBoardPop .45s cubic-bezier(.34,1.56,.64,1);background:linear-gradient(160deg,#2a0f4a,#8a2f7a)}
+  @keyframes wgBoardPop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.05);opacity:1}100%{transform:scale(1)}}
+  .wg-board-card .wg-boardicon{font-size:2.8rem;margin-bottom:6px}
+  .wg-board-card h3{font-family:"Amarante",serif;font-size:1.6rem;margin:4px 0 12px}
+  .wg-board-card p{white-space:pre-line;line-height:1.6;margin:0 0 18px;opacity:.97;font-size:1rem}
+
+  /* End-of-level story: a cloud banner that drifts in from the right while its words fade in */
+  .wg-story{position:absolute;left:0;top:40%;z-index:6;width:min(88vw,460px);pointer-events:none;opacity:0;will-change:transform;--acc:#8a2f7a}
+  .wg-story-inner{position:relative;isolation:isolate;background:#fffdf8;border-radius:38px;padding:30px 24px 22px;text-align:center;color:#3b2a12;filter:drop-shadow(0 12px 26px rgba(10,40,110,.38))}
+  .wg-story p{max-height:44vh;overflow:auto}
+  .wg-story-inner::before,.wg-story-inner::after{content:"";position:absolute;z-index:-1;background:#fffdf8;border-radius:50%}
+  .wg-story-inner::before{width:30%;height:56px;top:-24px;left:10%}
+  .wg-story-inner::after{width:38%;height:76px;top:-36px;left:44%}
+  .wg-story.done .wg-story-inner{pointer-events:auto}
+  .wg-story-icon{font-size:2.4rem;line-height:1.1}
+  .wg-story h3{margin:4px 0 10px;font-family:"Amarante",serif;font-size:1.55rem;color:var(--acc)}
+  .wg-story p{margin:0 0 6px;white-space:pre-line;line-height:1.45;font-family:"Caveat Brush",cursive;font-size:1.4rem}
+  .wg-story.ta h3,.wg-story.ta p{font-family:"Kavivanar",cursive}
+  .wg-story.ta p{font-size:1.1rem}
+  .wg-w{opacity:0;transition:opacity .9s ease}
+  .wg-w.on{opacity:1}
+  .wg-story-actions{margin-top:14px;opacity:0;transition:opacity .6s;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .wg-story.done .wg-story-actions{opacity:1}
+  .wg-story .wg-cta{background:var(--acc);color:#fff}
+  .wg-story .wg-cta.secondary{background:transparent;color:var(--acc);border:1px solid var(--acc);margin-left:0}
+
+  @media(max-width:600px){
+    .wg-card{padding:22px 18px}
+    .wg-board-card{padding:24px 18px}
+    .wg-pill{font-size:.7rem;padding:6px 9px}
+    .wg-story-inner{padding:26px 16px 18px}
+    .wg-story p{font-size:1.25rem}
+  }
+  </style>
+
+  <script>
+  (function(){
+    "use strict";
+
+    /* ---------- Inject Play button into the empty .game div (centered under couple names) ---------- */
+    const topControls = document.querySelector('div.game');
+    const playBtn = document.createElement('button');
+    playBtn.id = 'playGameBtn';
+    playBtn.type = 'button';
+    playBtn.title = 'Fly the parrot & unlock wedding details';
+    playBtn.setAttribute('aria-label', 'Play parrot game');
+    playBtn.textContent = 'Play';
+    if (topControls) topControls.appendChild(playBtn);
+
+    /* ---------- Overlay DOM ---------- */
+    const overlay = document.createElement('div');
+    overlay.id = 'wgOverlay';
+    overlay.innerHTML = [
+      '<canvas id="wgCanvas"></canvas>',
+      '<div id="wgHUD">',
+        '<button id="wgCloseBtn" aria-label="Close game">✕</button>',
+        '<div id="wgHudCenter">',
+          '<span class="wg-pill" id="wgStageLabel">Level 1</span>',
+          '<span class="wg-pill" id="wgJewels">💍 0</span>',
+          '<span class="wg-pill" id="wgLives">❤️❤️❤️</span>',
+        '</div>',
+        '<span style="width:36px"></span>',
+      '</div>',
+      '<div id="wgTapHint">Tap · Click · Space to flap</div>',
+      '<div id="wgJourney">Our Journey starts from here</div>',
+      '<div class="wg-story" id="wgStory">',
+        '<div class="wg-story-inner">',
+          '<div class="wg-story-icon" id="wgStoryIcon">🎉</div>',
+          '<h3 id="wgStoryTitle"></h3>',
+          '<p id="wgStoryBody"></p>',
+          '<div class="wg-story-actions">',
+            '<div id="wgStoryExtra"></div>',
+            '<button class="wg-cta" id="wgStoryCta" type="button">Continue ➜</button>',
+            '<button class="wg-cta secondary" id="wgStoryClose" type="button" style="display:none">Close &amp; enjoy the page 🏠</button>',
+          '</div>',
+        '</div>',
+      '</div>',
+      '<button id="wgEndBtn" type="button">✕ End journey</button>',
+      '<div id="wgIntro">',
+        '<div class="wg-card">',
+          '<div class="wg-cardicon" id="wgIntroIcon">🦜</div>',
+          '<h3 id="wgIntroTitle">Fly the parrot</h3>',
+          '<p id="wgIntroDesc"></p>',
+          '<button class="wg-cta" id="wgStartBtn" type="button">Launch ▶</button>',
+          '<div class="wg-hint">Tap the screen, click, or press Space to flap.<br>Don\'t fall to the ground and dodge the red clouds!</div>',
+        '</div>',
+      '</div>',
+      '<div id="wgDead">',
+        '<div class="wg-card">',
+          '<div class="wg-cardicon">💨</div>',
+          '<h3 id="wgDeadTitle">Cloud collision!</h3>',
+          '<p id="wgDeadMsg">The parrot needs a moment. Try this stretch again.</p>',
+          '<button class="wg-cta" id="wgRetryBtn" type="button">Retry ↻</button>',
+          '<button class="wg-cta secondary" id="wgQuitBtn" type="button">Quit</button>',
+        '</div>',
+      '</div>',
+      '<div id="wgBoard">',
+        '<div class="wg-board-card">',
+          '<div class="wg-boardicon">🦜</div>',
+          '<h3 id="wgBoardTitle">Journey paused</h3>',
+          '<p id="wgBoardBody"></p>',
+          '<button class="wg-cta" id="wgBoardCta" type="button">Close &amp; enjoy the page 🏠</button>',
+        '</div>',
+      '</div>'
+    ].join('');
+    document.body.appendChild(overlay);
+
+    const $ = function(id){ return document.getElementById(id); };
+    const canvas = $('wgCanvas');
+    const ctx = canvas.getContext('2d');
+    const elStage = $('wgStageLabel'), elJewels = $('wgJewels'), elLives = $('wgLives');
+    const elIntro = $('wgIntro'), elIntroIcon = $('wgIntroIcon'), elIntroTitle = $('wgIntroTitle'), elIntroDesc = $('wgIntroDesc'), elStartBtn = $('wgStartBtn');
+    const elDead = $('wgDead'), elDeadTitle = $('wgDeadTitle'), elDeadMsg = $('wgDeadMsg'), elRetryBtn = $('wgRetryBtn'), elQuitBtn = $('wgQuitBtn');
+    const elBoard = $('wgBoard'), elBoardTitle = $('wgBoardTitle'), elBoardBody = $('wgBoardBody'), elBoardCta = $('wgBoardCta');
+    const elStory = $('wgStory'), elStoryIcon = $('wgStoryIcon'), elStoryTitle = $('wgStoryTitle'), elStoryBody = $('wgStoryBody'),
+          elStoryExtra = $('wgStoryExtra'), elStoryCta = $('wgStoryCta'), elStoryClose = $('wgStoryClose');
+    const elTapHint = $('wgTapHint'), elJourney = $('wgJourney'), elEndBtn = $('wgEndBtn');
+
+    /* ---------- Constants ---------- */
+    const MAX_DPR = 2;
+    const BASE_SPEED = 210;        // world scroll speed (px/s)
+    const GRAVITY = 1300, FLAP_V = 400, MAX_FALL = 650; // scaled by screen height below
+    const COLLECT_EMOJI = ['💍','🌸','🎫','💌','🎁'];
+    const STAGES = [
+      { name:'Reception Skies',   item:'💍', target:12, hint:'Collect wedding rings 💍 to reveal the Reception details' },
+      { name:'Temple Heights',    item:'🌸', target:12, hint:'Gather flowers 🌸 to reveal the Muhurtham details' },
+      { name:'Road to Venue',     item:'🎫', target:12, hint:'Grab the tickets 🎫 to find the way to the venue' },
+      { name:'Save the Date',     item:'💌', target:12, hint:'Collect love letters 💌 to save the date' },
+      { name:'Celebration Finale',item:'🎁', target:12, hint:'Collect gifts 🎁 for our warm regards' },
+      { name:'Endless Journey',   item:'✨', target:0, endless:true, hint:'Fly as far as you like!' }
+    ];
+    const ENDLESS = STAGES.length - 1;
+
+    /* ---------- State ---------- */
+    let state = 'closed'; // closed | intro | playing | story | dead | ended
+    let stageIndex = 0, score = 0, lives = 3, invuln = 0;
+    let screenW = 0, screenH = 0, k = 1;
+    let raf = null, lastTs = 0, runTime = 0, endlessTime = 0;
+    let scrollX = 0, nextHard = 0, nextGem = 0, nextSoft = 0;
+    let started = false;            // first flap of the run
+    let flapAnim = 0, wingPhase = 0;
+    let deathReason = 'cloud';
+    let storyT = 0, storyDur = 4, storyW = 300, storyDone = false, storyWords = [];
+
+    const ship = { x: 0, y: 0, w: 60, h: 40, vy: 0 };
+    let clouds = [], gems = [], particles = [];
+
+    /* ---------- Story / board content (synced with page language) ---------- */
+    function langData(){
+      return (typeof langContent !== 'undefined' && typeof currentLang !== 'undefined' && langContent[currentLang]) ? langContent[currentLang] : null;
+    }
+    function isTa(){ return typeof currentLang !== 'undefined' && currentLang === 'ta'; }
+    function storyFor(i){
+      const d = langData();
+      const ta = isTa();
+      if (i === 0){
+        const ev = d ? d.events.reception : { title:'Reception', content:'On Saturday 12th December 2026 between 6.00 Pm & 9.00 Pm @ Mayura Mahal' };
+        return { acc:'#b4328a', icon:'🎉', title: ev.title, body: ev.content, cta: ta ? 'தொடர்ந்து பறக்கவும் ➜' : 'Continue flying ➜' };
+      }
+      if (i === 1){
+        const ev = d ? d.events.wedding : { title:'Muhurtham', content:'On Sunday 13th December 2026 between 4.00 Am & 5.00 Am @ Mayura Mahal' };
+        return { acc:'#a4381c', icon:'🛕', title: ev.title, body: ev.content, cta: ta ? 'தொடர்ந்து பறக்கவும் ➜' : 'Continue flying ➜' };
+      }
+      if (i === 2){
+        return { acc:'#1f8a6e', icon:'📍', title: ta ? 'திருமண மண்டபம்' : 'Venue',
+          body: ta ? 'மயூரா மஹால்\nவழி அறிய கீழே தொடவும்.' : 'Mayoora Mahal\nTap below for directions.',
+          cta: ta ? 'தொடர்ந்து பறக்கவும் ➜' : 'Continue flying ➜', mapLink:true };
+      }
+      if (i === 3){
+        return { acc:'#0d3b66', icon:'📅', title: ta ? 'நாளைக் குறித்துக்கொள்ளுங்கள்' : 'Save the Date',
+          body: ta ? '2026 டிசம்பர் 12 & 13\nவரவேற்பு • முஹூர்த்தம்\nமயூரா மஹால்' : '12th & 13th December 2026\nReception • Muhurtham\nMayoora Mahal',
+          cta: ta ? 'தொடர்ந்து பறக்கவும் ➜' : 'Continue flying ➜', calendar:true };
+      }
+      return { acc:'#8a2f7a', icon:'💞', title: ta ? 'அன்புடன்' : 'With Love & Warm Regards',
+        body: d ? d.message : 'Thank you for being a part of our special day.',
+        cta: ta ? 'முடிவில்லா பயணம் ∞ ➜' : 'Start the endless journey ∞ ➜', isFinal:true };
+    }
+
+    /* ---------- Canvas sizing ---------- */
+    function resize(){
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      screenW = overlay.clientWidth || window.innerWidth;
+      screenH = overlay.clientHeight || window.innerHeight;
+      k = Math.max(0.75, Math.min(1.3, screenH / 720));
+      canvas.width = Math.round(screenW * dpr);
+      canvas.height = Math.round(screenH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ship.x = screenW * 0.18;
+      cloudLayer.resize();
+    }
+    window.addEventListener('resize', function(){ if (state !== 'closed') resize(); });
+
+    /* ============================================================
+       CLOUD SKY — same shader family as before (kept as game background)
+       ============================================================ */
+    const cloudLayer = { resize:function(){}, setDrive:function(){}, frame:function(){} };
+
+    /* ---------- World objects ---------- */
+    function rand(a, b){ return a + Math.random() * (b - a); }
+    function spawnSoft(x){
+      const h = rand(40, 100);
+      return { x:x, y:rand(40, screenH - 140), w:h * rand(1.6, 2.4), h:h, type:'soft', phase:Math.random()*6.28, fade:0 };
+    }
+    function spawnHard(x){
+      // reddish "bad" cloud
+      const h = rand(56, 96) * Math.max(0.85, k);
+      return { x:x, y:rand(50, screenH - h - 70), w:h * rand(1.6, 2.2), h:h, type:'hard', phase:Math.random()*6.28, fade:0 };
+    }
+    function gemItem(){
+      return stageIndex === ENDLESS ? COLLECT_EMOJI[Math.floor(Math.random() * COLLECT_EMOJI.length)] : STAGES[stageIndex].item;
+    }
+    function spawnGem(x){
+      return { x:x, y:rand(80, screenH - 150), r:rand(15, 19), item:gemItem(), phase:Math.random()*6.28, fade:0 };
+    }
+    function overlapsHard(x, y, pad){
+      for (let i = 0; i < clouds.length; i++){
+        const c = clouds[i];
+        if (c.type !== 'hard') continue;
+        if (x > c.x - pad && x < c.x + c.w + pad && y > c.y - pad && y < c.y + c.h + pad) return true;
+      }
+      return false;
+    }
+    function trySpawnGem(){
+      for (let t = 0; t < 8; t++){
+        const g = spawnGem(screenW + 60);
+        if (!overlapsHard(g.x, g.y, 70)){ gems.push(g); return; }
+      }
+    }
+    function trySpawnHard(){
+      for (let t = 0; t < 8; t++){
+        const c = spawnHard(screenW + 40);
+        let bad = false;
+        for (let i = 0; i < gems.length; i++){
+          const g = gems[i];
+          if (g.x > c.x - 80 && g.x < c.x + c.w + 80 && g.y > c.y - 60 && g.y < c.y + c.h + 60){ bad = true; break; }
+        }
+        if (!bad){ clouds.push(c); return; }
+      }
+    }
+    function hardGap(){
+      if (stageIndex === ENDLESS) return Math.max(250, 420 - endlessTime * 3) + rand(0, 140);
+      return 470 - stageIndex * 28 + rand(0, 160);
+    }
+    function resetWorld(){
+      clouds = []; gems = []; particles = [];
+      scrollX = 0; endlessTime = 0;
+      nextHard = 330; nextGem = 140; nextSoft = 0;
+      for (let i = 0; i < 4; i++) clouds.push(spawnSoft(rand(screenW * 0.3, screenW + 300)));
+      ship.y = screenH * 0.42; ship.vy = 0;
+      started = false;
+    }
+
+    /* ---------- Particles ---------- */
+    function burst(x, y, color, n){
+      for (let i = 0; i < n; i++){
+        const a = Math.random() * Math.PI * 2, s = 80 + Math.random() * 160;
+        particles.push({ x:x, y:y, vx:Math.cos(a)*s, vy:Math.sin(a)*s - 40, life:1, decay:0.9+Math.random()*0.6, size:3+Math.random()*4, color:color });
+      }
+    }
+
+    /* ---------- Input: tap / click / Space only ---------- */
+    function flap(){
+      if (state !== 'playing' && state !== 'story') return;
+      started = true;
+      ship.vy = -FLAP_V * k;
+      flapAnim = 0.28;
+      elTapHint.classList.remove('wg-show');
+    }
+    overlay.addEventListener('pointerdown', function(e){
+      if (e.target.closest && e.target.closest('button, a, #wgIntro, #wgDead, #wgBoard, .wg-story-inner')) return;
+      e.preventDefault();
+      flap();
+    });
+    window.addEventListener('keydown', function(e){
+      if (state === 'closed') return;
+      if (e.code === 'Escape'){ closeGame(); return; }
+      if (e.code === 'Space'){
+        if (state === 'playing' || state === 'story'){
+          e.preventDefault();
+          if (!e.repeat) flap();
+        }
+      }
+    });
+
+    /* ---------- HUD ---------- */
+    function updateHUD(){
+      const st = STAGES[stageIndex];
+      elJewels.textContent = st.endless ? ('✨ ' + score) : (st.item + ' ' + score + ' / ' + st.target);
+      let h = '';
+      for (let i = 0; i < 3; i++) h += (i < lives ? '❤️' : '🤍');
+      elLives.textContent = h;
+      elStage.textContent = 'Level ' + (stageIndex + 1) + ' • ' + st.name;
+    }
+
+    /* ---------- Flow ---------- */
+    function hideStoryEls(){
+      elStory.style.opacity = 0;
+      elStory.classList.remove('done');
+      elStoryClose.style.display = 'none';
+    }
+    function openGame(){
+      stageIndex = 0; score = 0; lives = 3;
+      overlay.classList.add('wg-open');
+      if (window.__meadow) window.__meadow.pause(true);
+      resize();
+      showIntro();
+      if (!raf){ lastTs = performance.now(); raf = requestAnimationFrame(loop); }
+    }
+    function showIntro(){
+      // no launch popup: go straight into the level, with a short non-blocking hint
+      const st = STAGES[stageIndex];
+      beginStage(false);
+      elTapHint.textContent = 'Level ' + (stageIndex + 1) + ' • ' + st.hint + '\nTap · Click · Space to flap';
+    }
+    function closeGame(){
+      state = 'closed';
+      overlay.classList.remove('wg-open');
+      [elIntro, elDead, elBoard].forEach(function(e){ e.classList.remove('wg-show'); });
+      elTapHint.classList.remove('wg-show');
+      elEndBtn.classList.remove('wg-show');
+      elJourney.classList.remove('wg-play');
+      hideStoryEls();
+      if (raf){ cancelAnimationFrame(raf); raf = null; }
+      if (window.__meadow) window.__meadow.pause(false);
+    }
+    function beginStage(withJourneyText){
+      score = 0; invuln = 0;
+      resetWorld();
+      updateHUD();
+      hideStoryEls();
+      elIntro.classList.remove('wg-show');
+      elDead.classList.remove('wg-show');
+      elBoard.classList.remove('wg-show');
+      elEndBtn.classList.toggle('wg-show', stageIndex === ENDLESS);
+      elTapHint.textContent = 'Tap · Click · Space to flap';
+      elTapHint.classList.add('wg-show');
+      elJourney.classList.remove('wg-play');
+      if (withJourneyText){
+        void elJourney.offsetWidth; // restart the fade-out animation
+        elJourney.classList.add('wg-play');
+      }
+      state = 'playing';
+    }
+    function triggerDeath(reason){
+      state = 'dead';
+      deathReason = reason;
+      elTapHint.classList.remove('wg-show');
+      elDeadTitle.textContent = reason === 'fall' ? 'You fell!' : 'Cloud collision!';
+      elDeadMsg.textContent = reason === 'fall'
+        ? 'Keep tapping to stay in the air. The parrot needs a moment — try again.'
+        : 'The parrot needs a moment. Try this stretch again.';
+      elDead.classList.add('wg-show');
+    }
+    function loseLife(reason){
+      lives = Math.max(0, lives - 1);
+      invuln = 1.6;
+      updateHUD();
+      burst(ship.x + ship.w/2, ship.y + ship.h/2, reason === 'fall' ? '#7bd88f' : '#ff7a6b', 22);
+      if (lives <= 0){ triggerDeath(reason); return; }
+      if (reason === 'fall'){
+        // respawn mid-air and wait for the next tap
+        ship.y = screenH * 0.4; ship.vy = 0; started = false;
+        elTapHint.classList.add('wg-show');
+      }
+    }
+
+    /* ---------- End-of-level story banner ---------- */
+    function wrapWords(text){
+      const frag = document.createDocumentFragment();
+      const words = [];
+      text.split(/(\s+)/).forEach(function(tok){
+        if (!tok) return;
+        if (/^\s+$/.test(tok)){ frag.appendChild(document.createTextNode(tok)); return; }
+        const s = document.createElement('span');
+        s.className = 'wg-w'; s.textContent = tok;
+        frag.appendChild(s); words.push(s);
+      });
+      return { frag: frag, words: words };
+    }
+    function triggerStageWin(){
+      state = 'story';
+      elTapHint.classList.remove('wg-show');
+      burst(ship.x + ship.w/2, ship.y + ship.h/2, '#ffd166', 40);
+      // clear every obstacle & treat out of the window
+      clouds.forEach(function(c){ if (c.type === 'hard') c.fade = Math.max(c.fade, 0.001); });
+      gems.forEach(function(g){ g.fade = Math.max(g.fade, 0.001); });
+
+      const c = storyFor(stageIndex);
+      elStory.style.setProperty('--acc', c.acc);
+      elStory.classList.toggle('ta', isTa());
+      elStoryIcon.textContent = c.icon;
+      elStoryTitle.textContent = c.title;
+      elStoryBody.textContent = '';
+      const w = wrapWords(c.body);
+      elStoryBody.appendChild(w.frag);
+      storyWords = w.words;
+      elStoryCta.textContent = c.cta;
+      elStoryClose.style.display = c.isFinal ? '' : 'none';
+      elStoryExtra.innerHTML = '';
+      if (c.mapLink){
+        elStoryExtra.innerHTML = '<a class="wg-cta secondary" href="https://share.google/r4kkPk3fcFx69xJSY" target="_blank" rel="noopener">Get Directions</a>';
+      } else if (c.calendar){
+        elStoryExtra.innerHTML = '<button class="wg-cta secondary" type="button" data-cal="addReception">Add Reception</button> <button class="wg-cta secondary" type="button" data-cal="addWedding">Add Wedding</button>';
+      }
+      elStoryCta.onclick = function(){
+        hideStoryEls();
+        if (c.isFinal){
+          stageIndex = ENDLESS; score = 0; lives = 3;
+          updateHUD();
+          beginStage(true);
+        } else {
+          stageIndex++; score = 0;
+          showIntro();
+        }
+      };
+      elStoryClose.onclick = closeGame;
+
+      elStory.classList.remove('done');
+      elStory.style.opacity = 1;
+      storyW = elStory.offsetWidth || 320;
+      elStory.style.transform = 'translate3d(' + (screenW + 20) + 'px,-50%,0)';
+      storyT = 0; storyDone = false;
+      storyDur = Math.max(2.8, Math.min(6.8, storyWords.length * 0.17)) + 1.2;
+    }
+    elStoryExtra.addEventListener('click', function(e){
+      const b = e.target.closest && e.target.closest('[data-cal]');
+      if (b){ const t = document.getElementById(b.getAttribute('data-cal')); if (t) t.click(); }
+    });
+    function updateStory(dt){
+      storyT += dt;
+      const p = Math.min(1, storyT / storyDur);
+      const ease = 1 - Math.pow(1 - p, 3);                 // glide right → left, settling once the text is complete
+      const x0 = screenW + 20, x1 = (screenW - storyW) / 2;
+      elStory.style.transform = 'translate3d(' + (x0 + (x1 - x0) * ease).toFixed(1) + 'px,-50%,0)';
+      const reveal = storyDur - 1.2;                        // words fade in one after another while it drifts
+      const shown = Math.floor((storyT / reveal) * storyWords.length + 0.0001);
+      for (let i = 0; i < storyWords.length; i++) if (i < shown) storyWords[i].classList.add('on');
+      if (!storyDone && p >= 1){
+        storyDone = true;
+        storyWords.forEach(function(s){ s.classList.add('on'); });
+        elStory.classList.add('done');
+      }
+    }
+
+    /* ---------- Buttons ---------- */
+    elStartBtn.addEventListener('click', function(){ beginStage(false); });
+    elRetryBtn.addEventListener('click', function(){ lives = 3; beginStage(false); });
+    elQuitBtn.addEventListener('click', closeGame);
+    $('wgCloseBtn').addEventListener('click', closeGame);
+    playBtn.addEventListener('click', openGame);
+    elEndBtn.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+    elEndBtn.addEventListener('click', function(){
+      state = 'ended';
+      elEndBtn.classList.remove('wg-show');
+      elTapHint.classList.remove('wg-show');
+      elJourney.classList.remove('wg-play');
+      elBoardTitle.textContent = isTa() ? 'பயணம் தொடரும்…' : 'Journey paused';
+      elBoardBody.textContent = (isTa() ? 'சேகரித்தவை: ' : 'Treats collected: ') + score + '\n\n' + (isTa() ? 'திருமண நாளில் சந்திப்போம் 💞' : 'See you at the wedding 💞');
+      elBoard.classList.add('wg-show');
+    });
+    elBoardCta.addEventListener('click', closeGame);
+
+    /* ---------- Update ---------- */
+    function update(dt){
+      for (let i = particles.length-1; i >= 0; i--){
+        const p = particles[i];
+        p.vy += 280 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.decay * dt;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+      if (flapAnim > 0) flapAnim -= dt;
+      wingPhase += dt * (flapAnim > 0 ? 24 : (started ? 10 : 7));
+
+      if (state !== 'playing' && state !== 'story'){
+        cloudLayer.setDrive(0.1);
+        return;
+      }
+      runTime += dt;
+      if (invuln > 0) invuln -= dt;
+
+      /* parrot physics — gravity pulls it down, only a flap lifts it */
+      if (started){
+        ship.vy += GRAVITY * k * dt;
+        if (ship.vy > MAX_FALL * k) ship.vy = MAX_FALL * k;
+        ship.y += ship.vy * dt;
+      } else {
+        ship.y += Math.sin(runTime * 3) * 10 * dt;       // hover while waiting for the first tap
+      }
+      if (ship.y < 0){ ship.y = 0; if (ship.vy < 0) ship.vy = 0; }
+      const floor = screenH - ship.h - 6;
+      if (ship.y > floor){
+        if (state === 'story'){ ship.y = floor; ship.vy = -FLAP_V * k * 0.8; flapAnim = 0.25; }   // no penalty while the story plays
+        else { ship.y = floor; ship.vy = 0; loseLife('fall'); if (state !== 'playing') return; }
+      }
+
+      if (state === 'story'){
+        cloudLayer.setDrive(storyDone ? 0.35 : 0.9);
+        updateStory(dt);
+        // fade obstacles/treats away
+        for (let i = clouds.length - 1; i >= 0; i--){
+          const c = clouds[i];
+          if (c.type === 'hard'){ c.fade += dt * 1.8; if (c.fade >= 1) clouds.splice(i, 1); }
+        }
+        for (let i = gems.length - 1; i >= 0; i--){ gems[i].fade += dt * 1.8; if (gems[i].fade >= 1) gems.splice(i, 1); }
+      }
+
+      if (!started) { cloudLayer.setDrive(0.35); updateSoftOnly(dt); return; }
+
+      let speed = BASE_SPEED;
+      if (stageIndex === ENDLESS){ endlessTime += dt; speed += Math.min(120, endlessTime * 2.5); }
+      scrollX += speed * dt;
+      if (state === 'playing') cloudLayer.setDrive(0.6);
+
+      /* spawning (never while the level-end story is showing) */
+      if (state === 'playing'){
+        if (scrollX >= nextHard){ trySpawnHard(); nextHard = scrollX + hardGap(); }
+        if (scrollX >= nextGem){ trySpawnGem(); nextGem = scrollX + rand(210, 330); }
+      }
+      if (scrollX >= nextSoft){ clouds.push(spawnSoft(screenW + 80)); nextSoft = scrollX + rand(200, 380); }
+
+      for (let i = clouds.length - 1; i >= 0; i--){
+        const c = clouds[i];
+        c.x -= speed * dt;
+        c.y += Math.sin(runTime * 0.8 + c.phase) * 12 * dt;
+        if (c.x + c.w < -60) clouds.splice(i, 1);
+      }
+      for (let i = gems.length - 1; i >= 0; i--){
+        const g = gems[i];
+        g.x -= speed * dt;
+        g.y += Math.sin(runTime * 2.2 + g.phase) * 18 * dt;
+        if (g.x < -40) gems.splice(i, 1);
+      }
+
+      if (state !== 'playing') return;
+
+      /* collisions — parrot vs red clouds */
+      const sx1 = ship.x + 12, sx2 = ship.x + ship.w - 8;
+      const sy1 = ship.y + 8,  sy2 = ship.y + ship.h - 8;
+      for (let i = 0; i < clouds.length; i++){
+        const c = clouds[i];
+        if (c.type !== 'hard' || c.fade > 0) continue;
+        const cx1 = c.x + c.w * 0.15, cx2 = c.x + c.w * 0.85;
+        const cy1 = c.y + c.h * 0.2, cy2 = c.y + c.h * 0.8;
+        if (sx2 > cx1 && sx1 < cx2 && sy2 > cy1 && sy1 < cy2 && invuln <= 0){
+          loseLife('cloud');
+          if (state !== 'playing') return;
+          break;
+        }
+      }
+
+      /* collect treats */
+      for (let i = gems.length - 1; i >= 0; i--){
+        const g = gems[i];
+        if (g.fade > 0) continue;
+        const dx = (ship.x + ship.w/2) - g.x, dy = (ship.y + ship.h/2) - g.y;
+        if (dx*dx + dy*dy < (g.r + 24) * (g.r + 24)){
+          score++;
+          updateHUD();
+          burst(g.x, g.y, '#ffd166', 14);
+          gems.splice(i, 1);
+          if (!STAGES[stageIndex].endless && score >= STAGES[stageIndex].target){
+            triggerStageWin();
+            return;
+          }
+        }
+      }
+    }
+    function updateSoftOnly(dt){
+      for (let i = 0; i < clouds.length; i++){ clouds[i].y += Math.sin(runTime * 0.8 + clouds[i].phase) * 12 * dt; }
+    }
+
+    /* ---------- Render ---------- */
+    function rr(x, y, w, h, r){
+      r = Math.min(r, w/2, h/2);
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    const FG = '#535353';
+    function pxCloud(x, y, w, h, col){
+      ctx.fillStyle = col;
+      ctx.fillRect(x, y + h*0.5, w, h*0.5);
+      ctx.fillRect(x + w*0.15, y + h*0.25, w*0.7, h*0.3);
+      ctx.fillRect(x + w*0.35, y, w*0.3, h*0.3);
+    }
+    function drawSoftCloud(c){ pxCloud(c.x, c.y, c.w, c.h, '#e4e4e4'); }
+    function drawHardCloud(c){ ctx.globalAlpha = Math.max(0, 1 - c.fade); pxCloud(c.x, c.y, c.w, c.h, FG); ctx.globalAlpha = 1; }
+    function drawGem(g){
+      const bob = Math.sin(runTime * 3 + g.phase) * 4;
+      ctx.globalAlpha = Math.max(0, 1 - g.fade);
+      ctx.font = Math.round(g.r * 1.9) + 'px serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(g.item, g.x, g.y + bob);
+      ctx.globalAlpha = 1;
+    }
+    function drawShip(){
+      ctx.save();
+      ctx.translate(ship.x, ship.y);
+      ctx.globalAlpha = (invuln > 0 && Math.floor(runTime * 12) % 2 === 0) ? 0.4 : 1;
+      ctx.fillStyle = FG;
+      ctx.fillRect(0, 18, 10, 6);          // tail
+      ctx.fillRect(10, 16, 34, 14);        // body
+      ctx.fillRect(40, 8, 12, 12);         // head
+      ctx.fillRect(52, 13, 8, 4);          // beak
+      if (Math.sin(wingPhase) > 0) ctx.fillRect(16, 2, 16, 14); else ctx.fillRect(16, 28, 16, 10);   // wing flap
+      ctx.fillStyle = '#f7f7f7'; ctx.fillRect(46, 11, 3, 3);   // eye
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+    function render(now){
+      if (state === 'closed') return;
+      ctx.clearRect(0, 0, screenW, screenH);
+      for (let i = 0; i < clouds.length; i++){ if (clouds[i].type === 'soft') drawSoftCloud(clouds[i]); }
+      for (let i = 0; i < clouds.length; i++){ if (clouds[i].type === 'hard') drawHardCloud(clouds[i]); }
+      // ground line + moving dashes
+      ctx.fillStyle = FG; ctx.fillRect(0, screenH - 4, screenW, 2);
+      for (let i = 0; i < 7; i++){ ctx.fillRect(((i * 173 - scrollX) % screenW + screenW) % screenW, screenH - 11, 12, 2); }
+      for (let i = 0; i < gems.length; i++) drawGem(gems[i]);
+      ctx.fillStyle = FG;
+      for (let i = 0; i < particles.length; i++){
+        const p = particles[i];
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+      }
+      ctx.globalAlpha = 1;
+      if (state === 'playing' || state === 'story' || state === 'ended') drawShip();
+    }
+
+    function loop(ts){
+      const dt = Math.min(0.033, (ts - lastTs) / 1000);
+      lastTs = ts;
+      update(dt);
+      render(ts);
+      raf = requestAnimationFrame(loop);
+    }
+
+    // test hook (harmless in production)
+    window.__wg = { get state(){ return state; }, get score(){ return score; }, get lives(){ return lives; }, get stage(){ return stageIndex; },
+      endless: function(){ if(state==='closed')return; stageIndex=ENDLESS; score=0; lives=3; updateHUD(); beginStage(true); },
+      win: function(){ if (state === 'playing') triggerStageWin(); }, ship: ship };
+  })();
+  </script>
+<!-- for loader  -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Target milestone date: December 12, 2026 00:00:00
+    const targetDate = new Date("December 12, 2026 00:00:00").getTime();
+
+    // DOM Element hooks
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minsEl = document.getElementById("minutes");
+    const secsEl = document.getElementById("seconds");
+    const loaderOverlay = document.getElementById("countdown-loader-overlay");
+
+    // 1. Math engine updating the countdown values
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference < 0) {
+        clearInterval(timerInterval);
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      daysEl.textContent = String(days).padStart(2, "0");
+      hoursEl.textContent = String(hours).padStart(2, "0");
+      minsEl.textContent = String(minutes).padStart(2, "0");
+      secsEl.textContent = String(seconds).padStart(2, "0");
+    }
+
+    // Run initially and then loop every second
+    updateCountdown();
+    const timerInterval = setInterval(updateCountdown, 1000);
+
+    // 2. Auto-hide functionality (Triggers exactly at 2000 milliseconds)
+    setTimeout(() => {
+      loaderOverlay.classList.add("loader-hidden");
+      // Clean up interval when loader finishes showing
+      setTimeout(() => clearInterval(timerInterval), 500); 
+    }, 2000);
+  });
+</script>
+<!-- loader ends  -->
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var sel=['#title','#groom','#wed','#bride','.event-title','.event-media','.event-content','.map-title','.map-link:not(#quickmap)','.rounded-iframe','.thanks-title','.thanks-text'];
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('in',e.isIntersecting);});},{threshold:.2});
+  document.querySelectorAll(sel.join(',')).forEach(function(el,i){
+    el.setAttribute('data-reveal','');
+    var sibs=el.parentElement?Array.prototype.indexOf.call(el.parentElement.children,el):0;
+    el.style.setProperty('--d',(Math.min(sibs,4)*0.12)+'s');
+    io.observe(el);
+  });
+  window.__meadow={pause:function(p){var v=document.getElementById('bgVid');if(!v)return;if(p)v.pause();else{var r=v.play();if(r&&r.catch)r.catch(function(){});}}};
+})();
+</script>
+</body>
+</html>
